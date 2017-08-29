@@ -13,8 +13,8 @@ using namespace ct;
 GaussianBlur::GaussianBlur(int iWidth, int iHeight) {
   ofDisableArbTex();
   
-  blurX.load("shaders/blurX");
-  blurY.load("shaders/blurY");
+  blurX.load("shaders/passthrough.vert", "shaders/blurX.frag");
+  blurY.load("shaders/passthrough.vert", "shaders/blurY.frag");
   
   passOne.allocate(iWidth, iHeight, GL_RGBA, 0);
   passTwo.allocate(iWidth, iHeight, GL_RGBA, 0);

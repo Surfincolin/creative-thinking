@@ -58,10 +58,10 @@ class ofApp : public ofBaseApp{
   
   ofShader chromaticShader;
   ofShader colorDodge;
-//  ofShader blurX;
-//  ofShader blurY;
+  ofShader findEdge;
+
   
-//  ofFbo fboPassOne;
+  ofFbo edgePassFbo;
 //  ofFbo fboPassTwo;
   ofFbo fboDodge;
   

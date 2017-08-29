@@ -15,8 +15,9 @@ void ofApp::setup(){
   
   
   ofDisableArbTex();
-  chromaticShader.load("shaders/chromaticShader");
-  colorDodge.load("shaders/colorDodge");
+  chromaticShader.load("shaders/passthrough.vert", "shaders/chromaticShader.frag");
+  colorDodge.load("shaders/passthrough.vert", "shaders/colorDodge.frag");
+  findEdge.load("shaders/passthrough.vert", "shaders/findEdge.frag");
 //  blurX.load("shaders/blurX");
 //  blurY.load("shaders/blurY");
   
@@ -40,7 +41,7 @@ void ofApp::setup(){
   hsb.allocate(w,h);
   invertedGrey.allocate(w,h);
   
-//  fboPassOne.allocate(w, h);
+  edgePassFbo.allocate(w, h);
 //  fboPassTwo.allocate(w, h);
   fboDodge.allocate(w, h);
 
@@ -89,9 +90,22 @@ void ofApp::update(){
 void ofApp::draw(){
   ofSetColor(ofColor::white);
   
+  float opacity = ofMap(mouseX, 0, ofGetWidth(), 0.0, 1.0, true);
 //  float blur = ofMap(mouseX, 0, ofGetWidth(), 0, 1.0, true);
   float alpha = ofMap(mouseX, 0, ofGetWidth(), 0.0, 2.0, true);
   float beta = ofMap(mouseY, 0, ofGetHeight(), -100.0/255.0, 100.0/255.0, true);
+  
+  
+  edgePassFbo.begin();
+  ofClear(255);
+  findEdge.begin();
+  findEdge.setUniform2f("resolution", w, h);
+  cam.draw(0, 0, w, h);
+  findEdge.end();
+  edgePassFbo.end();
+  
+//  edgePassFbo.draw(0,0);
+  
   
   //draw all cv images
 //  colorImg.draw(0,0);
@@ -145,8 +159,11 @@ void ofApp::draw(){
 //  blurred.draw(0, 0);
 //
   fboDodge.begin();
+  ofClear(255);
   colorDodge.begin();
   colorDodge.setUniformTexture("image", grey.getTexture(), 1);
+  colorDodge.setUniformTexture("edges", edgePassFbo.getTexture(), 2);
+  colorDodge.setUniform1f("opacity", opacity);
   colorDodge.setUniform1i("fN", fN);
   colorDodge.setUniform1f("alpha", alpha);
   colorDodge.setUniform1f("beta", beta);
@@ -156,6 +173,7 @@ void ofApp::draw(){
   fboDodge.end();
 //
   grey.draw(0,0);
+//  edgePassFbo.draw(0,0);
   fboDodge.draw(0,0);
   
 

@@ -6,7 +6,6 @@ uniform float time;
 uniform vec2 resolution;
 
 in vec2 texCoordVarying;
-in vec4 vertColor;
 
 out vec4 outputColor;
 

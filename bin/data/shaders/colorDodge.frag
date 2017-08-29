@@ -3,10 +3,12 @@
 uniform sampler2D tex0;
 
 uniform sampler2D image;
+uniform sampler2D edges;
 
 uniform int fN = 7;
 //uniform float alpha = 1.0;
 //uniform float beta = 0.0;
+uniform float opacity = 1.0;
 
 //int fN = 7;
 float alpha = 0.732812524;
@@ -17,11 +19,25 @@ out vec4 outputColor;
 
 vec2 res = vec2(640.0, 480.0);
 
+float blendSubtract(float base, float blend) {
+  return max(base+blend-1.0,0.0);
+}
+
+vec3 blendSubtract(vec3 base, vec3 blend) {
+  return max(base+blend-vec3(1.0),vec3(0.0));
+}
+
+vec3 blendSubtract(vec3 base, vec3 blend, float opacity) {
+  return (blendSubtract(base, blend) * opacity + base * (1.0 - opacity));
+}
+
 void main() {
   
   vec4 color;
   
   vec4 imageC = texture(image, gl_FragCoord.xy/res);
+  
+  vec4 edgeC = texture(edges, gl_FragCoord.xy/res);
   
   vec4 mask = texture(tex0, gl_FragCoord.xy/res);
   
@@ -76,7 +92,15 @@ void main() {
     color = ci;
   }
   
+  
+  // multiply with opacity
+//  color = (color * edgeC) * opacity + color * (1.0 - opacity);
+//  color = color * vec4(edgeC.r, edgeC.g, edgeC.b, 0.6);
+//  color = edgeC;
 
+  vec3 subtract = blendSubtract(color.rgb, edgeC.rgb, 0.61);
+  
+  color = vec4(subtract, 1.0);
   
   outputColor = color;
   
