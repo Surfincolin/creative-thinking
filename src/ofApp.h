@@ -4,14 +4,19 @@
 #include "ofxOpenCv.h"
 
 #include "ofxGui.h"
+#include "CameraHandler.hpp"
+#include "ImageHandler.hpp"
 #include "GaussianBlur.hpp"
 
 class ofApp : public ofBaseApp{
   
-  int w = 640;
-  int h = 480;
+  int w = 1280;
+  int h = 720;
   
   int fN = 7;
+  
+  ct::CameraHandler cameraHandler;
+  ct::ImageHandler imageHandler;
   
   ofxPanel gui;
   ofxIntSlider lowerThreshold;
@@ -19,7 +24,7 @@ class ofApp : public ofBaseApp{
   ofxIntSlider blurPasses;
   bool hideGui;
 
-  shared_ptr<ct::GaussianBlur> gBlur;
+  //shared_ptr<ct::GaussianBlur> gBlur;
   
 	public:
 		void setup();

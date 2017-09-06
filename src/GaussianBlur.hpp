@@ -26,10 +26,13 @@ class GaussianBlur {
   
 public:
   
-  GaussianBlur(int iWidth, int iHeight);
+  void setup(int iWidth, int iHeight);
+  
+  GaussianBlur();
   ~GaussianBlur();
   
   shared_ptr<ofImage> blurImage(ofVideoGrabber iOriginal, int iPasses);
+  void processEffect(ofImage &imageIn);
   
 };
 

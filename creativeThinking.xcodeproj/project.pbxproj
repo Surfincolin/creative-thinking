@@ -12,6 +12,9 @@
 		1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 907C5B5E104864A2D3A25745 /* ofxToggle.cpp */; };
 		1D5F3298C2FA073628012944 /* ofxCvContourFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C76DE5C29BDBD2CAA1DD0021 /* ofxCvContourFinder.cpp */; };
 		2404FBA41F4BC7C9003B0004 /* GaussianBlur.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2404FBA21F4BC7C9003B0004 /* GaussianBlur.cpp */; };
+		244D58CE1F5F6337000ED781 /* CameraHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 244D58CC1F5F6337000ED781 /* CameraHandler.cpp */; };
+		244D58D11F5F634C000ED781 /* ImageHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 244D58CF1F5F634C000ED781 /* ImageHandler.cpp */; };
+		244D58D41F5F6375000ED781 /* EffectHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 244D58D21F5F6375000ED781 /* EffectHandler.cpp */; };
 		250A95BA26587BE85DB0A353 /* ofxCvColorImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE9C7160245B19131DAE6128 /* ofxCvColorImage.cpp */; };
 		483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78D67A00EB899FAC09430597 /* ofxLabel.cpp */; };
 		5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88333E71C9457E441C33474 /* ofxButton.cpp */; };
@@ -93,6 +96,12 @@
 		2404FBA21F4BC7C9003B0004 /* GaussianBlur.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GaussianBlur.cpp; sourceTree = "<group>"; };
 		2404FBA31F4BC7C9003B0004 /* GaussianBlur.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GaussianBlur.hpp; sourceTree = "<group>"; };
 		2411F6B35DAAAE5083D51167 /* motion_estimators.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = motion_estimators.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/stitching/detail/motion_estimators.hpp; sourceTree = SOURCE_ROOT; };
+		244D58CC1F5F6337000ED781 /* CameraHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraHandler.cpp; sourceTree = "<group>"; };
+		244D58CD1F5F6337000ED781 /* CameraHandler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CameraHandler.hpp; sourceTree = "<group>"; };
+		244D58CF1F5F634C000ED781 /* ImageHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageHandler.cpp; sourceTree = "<group>"; };
+		244D58D01F5F634C000ED781 /* ImageHandler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImageHandler.hpp; sourceTree = "<group>"; };
+		244D58D21F5F6375000ED781 /* EffectHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EffectHandler.cpp; sourceTree = "<group>"; };
+		244D58D31F5F6375000ED781 /* EffectHandler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = EffectHandler.hpp; sourceTree = "<group>"; };
 		24CD3C881F4A09140009910C /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; name = data; path = bin/data; sourceTree = "<group>"; };
 		26E4EEE253C8A6EFC3B3A639 /* warpers.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = warpers.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/stitching/detail/warpers.hpp; sourceTree = SOURCE_ROOT; };
 		26EF3E71A07C6948EAF6709E /* ofxTCPManager.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxTCPManager.h; path = ../../../addons/ofxNetwork/src/ofxTCPManager.h; sourceTree = SOURCE_ROOT; };
@@ -415,6 +424,15 @@
 				2F519EB3B0DCD7378FB86ABE /* ofxUDPManager.h */,
 			);
 			name = src;
+			sourceTree = "<group>";
+		};
+		244D58CB1F5F6309000ED781 /* Effects */ = {
+			isa = PBXGroup;
+			children = (
+				2404FBA21F4BC7C9003B0004 /* GaussianBlur.cpp */,
+				2404FBA31F4BC7C9003B0004 /* GaussianBlur.hpp */,
+			);
+			name = Effects;
 			sourceTree = "<group>";
 		};
 		303E2D4AF80E80BD1FD5E5F6 /* detail */ = {
@@ -770,11 +788,16 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				244D58CB1F5F6309000ED781 /* Effects */,
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
-				2404FBA21F4BC7C9003B0004 /* GaussianBlur.cpp */,
-				2404FBA31F4BC7C9003B0004 /* GaussianBlur.hpp */,
+				244D58D21F5F6375000ED781 /* EffectHandler.cpp */,
+				244D58D31F5F6375000ED781 /* EffectHandler.hpp */,
+				244D58CF1F5F634C000ED781 /* ImageHandler.cpp */,
+				244D58D01F5F634C000ED781 /* ImageHandler.hpp */,
+				244D58CC1F5F6337000ED781 /* CameraHandler.cpp */,
+				244D58CD1F5F6337000ED781 /* CameraHandler.hpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -895,6 +918,7 @@
 			files = (
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
+				244D58D11F5F634C000ED781 /* ImageHandler.cpp in Sources */,
 				856AA354D08AB4B323081444 /* ofxBaseGui.cpp in Sources */,
 				5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */,
 				B266578FC55D23BFEBC042E7 /* ofxGuiGroup.cpp in Sources */,
@@ -909,6 +933,8 @@
 				2404FBA41F4BC7C9003B0004 /* GaussianBlur.cpp in Sources */,
 				E2564CF7DDB3713772BB682E /* ofxUDPManager.cpp in Sources */,
 				250A95BA26587BE85DB0A353 /* ofxCvColorImage.cpp in Sources */,
+				244D58D41F5F6375000ED781 /* EffectHandler.cpp in Sources */,
+				244D58CE1F5F6337000ED781 /* CameraHandler.cpp in Sources */,
 				1D5F3298C2FA073628012944 /* ofxCvContourFinder.cpp in Sources */,
 				169D3C72FDE6C5590A1616F5 /* ofxCvFloatImage.cpp in Sources */,
 				FB09C6B2A1DA0EA217240CB8 /* ofxCvGrayscaleImage.cpp in Sources */,
