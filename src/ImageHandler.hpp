@@ -20,6 +20,7 @@ namespace ct {
     
     EffectHandler fx;
     ofImage originalImage;
+    ofImage processedImage;
     
     bool active = false;
     

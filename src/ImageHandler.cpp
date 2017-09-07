@@ -21,7 +21,7 @@ void ImageHandler::setOriginal(ofImage iPic) {
   fx.turnOnEffect(EFFECTS::BLUR);
 
   originalImage.clone(iPic);
-  fx.processImage(originalImage);
+  processImage();
   active = true;
 }
 
@@ -32,7 +32,10 @@ void ImageHandler::resetOriginal() {
 
 void ImageHandler::update() {
   if (active) {
+    
     originalImage.update();
+//    processImage();
+    
   }
 }
 
@@ -44,7 +47,9 @@ void ImageHandler::processImage() {
 
 void ImageHandler::draw() {
   if (active) {
+//    processImage();
     originalImage.draw(0.0, 0.0);
+    
   }
 }
 

@@ -14,11 +14,20 @@ EffectHandler::EffectHandler() {
   
   activeEffects.insert( pair<EFFECTS, bool>(EFFECTS::BLUR, false));
   
+  masterFbo = make_shared<ofFbo>();
+  
 };
 
 void EffectHandler::setup(int iWidth, int iHeight) {
 
-  gBlur.setup(iWidth, iHeight);
+  resolution.x = iWidth;
+  resolution.y = iHeight;
+  
+  masterFbo->allocate(resolution.x, resolution.y);
+  
+  auto gBlur = make_shared<GaussianBlur>();
+  gBlur->setup(resolution, masterFbo);
+  allEffects.insert( make_pair(EFFECTS::BLUR, gBlur) );
   
 };
 
@@ -34,23 +43,27 @@ void EffectHandler::turnOffEffect(EFFECTS fx) {
   
 };
 
-ofImage EffectHandler::processImage(ofImage &imageIn) {
+void EffectHandler::processImage(ofImage &imageIn) {
   
-  if ( activeEffects.at(EFFECTS::BLUR) ) {
-    //Handle Blur
-    gBlur.processEffect(imageIn);
+  for (auto fx : allEffects) {
+    
+    if (activeEffects.at(fx.first)) {
+      
+      fx.second->processEffect(imageIn);
+      
+    }
+    
+    
   }
   
-  return imageIn;
   
-};
-
-void EffectHandler::update() {
-
-};
-
-void EffectHandler::draw() {
-
+//  if ( activeEffects.at(EFFECTS::BLUR) ) {
+//    //Handle Blur
+//    gBlur.processEffect(imageIn);
+//  }
+//  
+//  return imageIn;
+  
 };
 
 

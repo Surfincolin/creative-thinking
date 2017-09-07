@@ -10,6 +10,7 @@
 #define EffectHandler_hpp
 
 #include "ofMain.h"
+#include "Effect.hpp"
 #include "GaussianBlur.hpp"
 
 namespace ct {
@@ -20,15 +21,17 @@ namespace ct {
     
   private:
     
-    GaussianBlur gBlur;
+    ofVec2f resolution;
+    std::shared_ptr<ofFbo> masterFbo;
     
     std::map<EFFECTS, bool> activeEffects;
+    std::map<EFFECTS, shared_ptr<Effect> > allEffects;
     
   public:
     
     void turnOnEffect(EFFECTS fx);
     void turnOffEffect(EFFECTS fx);
-    ofImage processImage(ofImage &imageIn);
+    void processImage(ofImage &imageIn);
     
     void setup(int iWidth, int iHeight);
     void update();

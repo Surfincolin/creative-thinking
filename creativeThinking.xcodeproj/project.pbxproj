@@ -15,6 +15,7 @@
 		244D58CE1F5F6337000ED781 /* CameraHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 244D58CC1F5F6337000ED781 /* CameraHandler.cpp */; };
 		244D58D11F5F634C000ED781 /* ImageHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 244D58CF1F5F634C000ED781 /* ImageHandler.cpp */; };
 		244D58D41F5F6375000ED781 /* EffectHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 244D58D21F5F6375000ED781 /* EffectHandler.cpp */; };
+		246FB31E1F618ADB00131310 /* Effect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 246FB31C1F618ADB00131310 /* Effect.cpp */; };
 		250A95BA26587BE85DB0A353 /* ofxCvColorImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE9C7160245B19131DAE6128 /* ofxCvColorImage.cpp */; };
 		483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78D67A00EB899FAC09430597 /* ofxLabel.cpp */; };
 		5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88333E71C9457E441C33474 /* ofxButton.cpp */; };
@@ -102,6 +103,8 @@
 		244D58D01F5F634C000ED781 /* ImageHandler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImageHandler.hpp; sourceTree = "<group>"; };
 		244D58D21F5F6375000ED781 /* EffectHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EffectHandler.cpp; sourceTree = "<group>"; };
 		244D58D31F5F6375000ED781 /* EffectHandler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = EffectHandler.hpp; sourceTree = "<group>"; };
+		246FB31C1F618ADB00131310 /* Effect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Effect.cpp; sourceTree = "<group>"; };
+		246FB31D1F618ADB00131310 /* Effect.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Effect.hpp; sourceTree = "<group>"; };
 		24CD3C881F4A09140009910C /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; name = data; path = bin/data; sourceTree = "<group>"; };
 		26E4EEE253C8A6EFC3B3A639 /* warpers.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = warpers.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/stitching/detail/warpers.hpp; sourceTree = SOURCE_ROOT; };
 		26EF3E71A07C6948EAF6709E /* ofxTCPManager.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxTCPManager.h; path = ../../../addons/ofxNetwork/src/ofxTCPManager.h; sourceTree = SOURCE_ROOT; };
@@ -431,6 +434,8 @@
 			children = (
 				2404FBA21F4BC7C9003B0004 /* GaussianBlur.cpp */,
 				2404FBA31F4BC7C9003B0004 /* GaussianBlur.hpp */,
+				246FB31C1F618ADB00131310 /* Effect.cpp */,
+				246FB31D1F618ADB00131310 /* Effect.hpp */,
 			);
 			name = Effects;
 			sourceTree = "<group>";
@@ -922,6 +927,7 @@
 				856AA354D08AB4B323081444 /* ofxBaseGui.cpp in Sources */,
 				5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */,
 				B266578FC55D23BFEBC042E7 /* ofxGuiGroup.cpp in Sources */,
+				246FB31E1F618ADB00131310 /* Effect.cpp in Sources */,
 				483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */,
 				F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */,
 				837220E80EB56CD44AD27F2A /* ofxSlider.cpp in Sources */,
