@@ -13,19 +13,6 @@ uniform vec2 resolution = vec2(1280.0,720.0);
 
 void main() {
   
-//  vec4 col = texture(tex0, vec2(0.5,0.5));
-//  if (col.r > 0.0) {
-//    //red
-//    outputColor = vec4(1.0,0,0,1.0);
-//  } else {
-//    //green
-//    outputColor = vec4(0,1.0,0,1.0);
-//  }
-//  return;
-  
-//  outputColor = texture(tex0, gl_FragCoord.xy/resolution);
-//  return;
-  
   vec4 color;
   
   color = texture(tex0, gl_FragCoord.xy/resolution) * weight[0];

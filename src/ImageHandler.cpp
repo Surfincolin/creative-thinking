@@ -19,6 +19,8 @@ void ImageHandler::setOriginal(ofImage iPic) {
   
   fx.setup(iPic.getWidth(), iPic.getHeight());
   fx.turnOnEffect(EFFECTS::BLUR);
+  fx.turnOnEffect(EFFECTS::FINDEDGE);
+  fx.turnOnEffect(EFFECTS::BLENDER);
 
   originalImage.clone(iPic);
   processImage();
@@ -34,7 +36,7 @@ void ImageHandler::update() {
   if (active) {
     
     originalImage.update();
-//    processImage();
+    
     
   }
 }
@@ -47,7 +49,7 @@ void ImageHandler::processImage() {
 
 void ImageHandler::draw() {
   if (active) {
-//    processImage();
+    
     originalImage.draw(0.0, 0.0);
     
   }

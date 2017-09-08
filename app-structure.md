@@ -44,3 +44,11 @@ Effects
 		Paper Texture
 		Fluid Simulation
 		Particle Divergence and Relaxation
+
+FX Pipe
+=======
+Image In => \ 	=> findEdges - - - - - - - - - - - - - - -- - - - - - - -> / => Sketch [subtract] edges = Stencil Image
+					   \  => GreyScale - - - - - - > / => gBlurInverted / GreyScale /
+						  \ => GaussianBlur => Invert /
+
+

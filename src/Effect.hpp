@@ -19,20 +19,21 @@ namespace ct {
     
   private:
     
-    shared_ptr<ofFbo> masterFbo;
-    std::vector< ofShader > effectShaders;
-    
     ofVec2f resolution;
     int passes = 1;
     
   public:
     
+    std::vector< shared_ptr<ofFbo> > fbos;
+    std::vector< ofShader > effectShaders;
+    
     Effect();
     ~Effect();
     
-    void setup(ofVec2f iResolution, shared_ptr<ofFbo> iFbo);
+    void setup(ofVec2f iResolution, shared_ptr<ofFbo> iFbo, shared_ptr<ofFbo> jFbo);
     void addShader(string iFragFile);
     void setPasses(int iPasses) { passes = iPasses; };
+    ofVec2f getResolution() { return resolution; };
     
     void processEffect(ofImage &imageIn);
     void setAddtionalUniforms(ofShader &iShader);

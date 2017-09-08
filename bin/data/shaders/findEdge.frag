@@ -173,7 +173,7 @@ vec4 trueColorEdge(float stepx, float stepy, vec2 center, mat3 kernelX, mat3 ker
 void main() {
 //  vec2 uv = 1.0 - gl_FragCoord.xy / resolution.xy;
   vec2 uv = gl_FragCoord.xy / resolution.xy;
-  uv = vec2(1.0 - uv.x, uv.y);
+//  uv = vec2(1.0 - uv.x, uv.y);
 //  vec4 color = texture(tex0, uv.xy);
 //  outputColor = color;
 //  return;

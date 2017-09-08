@@ -12,17 +12,20 @@
 #include "ofMain.h"
 #include "Effect.hpp"
 #include "GaussianBlur.hpp"
+#include "FindEdge.hpp"
+#include "Blender.hpp"
 
 namespace ct {
   
-  enum class EFFECTS { BLUR };
+  enum class EFFECTS { BLUR, FINDEDGE, BLENDER };
   
   class EffectHandler {
     
   private:
     
     ofVec2f resolution;
-    std::shared_ptr<ofFbo> masterFbo;
+    std::shared_ptr<ofFbo> firstFbo;
+    std::shared_ptr<ofFbo> secondFbo;
     
     std::map<EFFECTS, bool> activeEffects;
     std::map<EFFECTS, shared_ptr<Effect> > allEffects;

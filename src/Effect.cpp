@@ -15,9 +15,10 @@ Effect::Effect() {
   
 }
 
-void Effect::setup(ofVec2f iResolution, shared_ptr<ofFbo> iFbo) {
+void Effect::setup(ofVec2f iResolution, shared_ptr<ofFbo> iFbo, shared_ptr<ofFbo> jFbo) {
   resolution = iResolution;
-  masterFbo = iFbo;
+  fbos.push_back(iFbo);
+  fbos.push_back(jFbo);
 }
 
 void Effect::addShader(string iFragFile) {
@@ -34,33 +35,41 @@ void Effect::setAddtionalUniforms(ofShader &iShader) {
 
 void Effect::processEffect(ofImage &imageIn) {
   bool setOg = true;
+  auto lastFbo = 1;
   
   for (auto i = 0; i < passes; i++) {
-    for (auto shdr : effectShaders) {
+    for (auto &shdr : effectShaders) {
       
-      masterFbo->begin();
+      auto curFbo = fbos.at(lastFbo % 2);
+      auto prevFbo = fbos.at( (lastFbo-1) % 2);
+      
+      curFbo->begin();
+      ofClear(0, 0, 0);
+      
       shdr.begin();
-
+      
       shdr.setUniform2f("resolution", resolution);
       setAddtionalUniforms(shdr);
       
       if (setOg) {
-        ofClear(0, 0, 0);
         imageIn.draw(0, 0);
         setOg = false;
       } else {
-        masterFbo->draw(0, 0);
+        prevFbo->draw(0,0);
       }
 
       shdr.end();
-      masterFbo->end();
+      curFbo->end();
       
+      lastFbo++;
+    
     }
   }
   
-  masterFbo->begin();
-  imageIn.grabScreen(0, 0, resolution.x, resolution.y);
-  masterFbo->end();
+  ofPixels pix;
+  fbos.at( (lastFbo-1) % 2)->readToPixels(pix);
+  
+  imageIn.setFromPixels(pix);
   
 }
 

@@ -12,9 +12,12 @@ using namespace ct;
 
 EffectHandler::EffectHandler() {
   
-  activeEffects.insert( pair<EFFECTS, bool>(EFFECTS::BLUR, false));
+  activeEffects.insert(make_pair(EFFECTS::BLUR, false));
+  activeEffects.insert( make_pair(EFFECTS::FINDEDGE, false));
+  activeEffects.insert( make_pair(EFFECTS::BLENDER, false));
   
-  masterFbo = make_shared<ofFbo>();
+  firstFbo = make_shared<ofFbo>();
+  secondFbo = make_shared<ofFbo>();
   
 };
 
@@ -23,11 +26,20 @@ void EffectHandler::setup(int iWidth, int iHeight) {
   resolution.x = iWidth;
   resolution.y = iHeight;
   
-  masterFbo->allocate(resolution.x, resolution.y);
+  firstFbo->allocate(resolution.x, resolution.y);
+  secondFbo->allocate(resolution.x, resolution.y);
+  
+  auto findEdge = make_shared<FindEdge>();
+  findEdge->setup(resolution, firstFbo, secondFbo);
+  allEffects.insert( make_pair(EFFECTS::FINDEDGE, findEdge) );
   
   auto gBlur = make_shared<GaussianBlur>();
-  gBlur->setup(resolution, masterFbo);
+  gBlur->setup(resolution, firstFbo, secondFbo);
   allEffects.insert( make_pair(EFFECTS::BLUR, gBlur) );
+  
+  auto blender = make_shared<Blender>();
+  blender->setup(resolution, firstFbo, secondFbo);
+  allEffects.insert( make_pair(EFFECTS::BLENDER, blender) );
   
 };
 
@@ -45,15 +57,25 @@ void EffectHandler::turnOffEffect(EFFECTS fx) {
 
 void EffectHandler::processImage(ofImage &imageIn) {
   
-  for (auto fx : allEffects) {
-    
-    if (activeEffects.at(fx.first)) {
-      
-      fx.second->processEffect(imageIn);
-      
-    }
-    
-    
+  // Original
+  ofImage edges;
+  ofImage gBlur;
+  edges.clone(imageIn);
+  gBlur.clone(imageIn);
+  
+  // findEdge
+  if (activeEffects.at(EFFECTS::FINDEDGE)) {
+    allEffects.at(EFFECTS::FINDEDGE)->processEffect(edges);
+  }
+  
+  // Gaussian
+  if (activeEffects.at(EFFECTS::BLUR)) {
+    allEffects.at(EFFECTS::BLUR)->processEffect(gBlur);
+  }
+  
+  if (activeEffects.at(EFFECTS::BLENDER)) {
+    auto blender = static_pointer_cast<Blender>(allEffects.at(EFFECTS::BLENDER));
+    blender->processEffect(imageIn, edges, gBlur);
   }
   
   
