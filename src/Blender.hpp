@@ -19,7 +19,7 @@ namespace ct {
     
   public:
     
-    void processEffect(ofImage &iBase, ofImage &iBlend, ofImage &iMask);
+    void processEffect(shared_ptr<ofImage> imageIn, ofImage &iEdges, ofImage &iBlurred);
     
     Blender();
     ~Blender();

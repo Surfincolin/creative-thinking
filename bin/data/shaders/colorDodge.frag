@@ -17,7 +17,7 @@ float brightness = 0.228758186;
 in vec2 texCoordVarying;
 out vec4 outputColor;
 
-vec2 res = vec2(1280.0, 720.0);
+uniform vec2 resolution = vec2(1280.0, 720.0);
 
 #define NoiseAmount 0.005
 #define ErrorPeriod 15.0
@@ -102,7 +102,7 @@ void distortPos(vec2 uv, inout vec2 uvs[3]) {
   vec2 st = uv;
   
   float col = 0.0;
-  st.x *=  res.x/res.y;
+  st.x *=  resolution.x/resolution.y;
   col += fbm(st*1) * 2.0 - 1.;
   //col.y = fbm(st.yx*3) * 2.0 - 1.;
   //col.z = 0.0;
@@ -121,7 +121,7 @@ void main() {
   
   vec4 color = vec4(0,0,0,1);
   
-  vec2 uv = gl_FragCoord.xy/res;
+  vec2 uv = gl_FragCoord.xy/resolution;
   
   vec2[3] uvs;
   
@@ -203,7 +203,7 @@ void main() {
   
   color = vec4(subtract, 1.0);
   
-  color.rgb = mix(subtract, imageC.rgb, 0.35);
+  color.rgb = mix(subtract, imageC.rgb, 0.1);
   
   outputColor = color;
   

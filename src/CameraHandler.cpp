@@ -41,6 +41,10 @@ void CameraHandler::update() {
     pic = photo.capture();
     original->setFromPixels(pic, photo.getCaptureWidth(), photo.getCaptureHeight(), OF_IMAGE_COLOR,0);
     
+    // Weird Color Fix
+    ofPixels pix = original->getPixels();
+    original->setFromPixels(pix);
+    
     printf("Loading finished!\n");
     busy = false;
     newImage = true;

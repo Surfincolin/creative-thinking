@@ -25,7 +25,7 @@ out vec4 outputColor;
 #ifdef SCHARR
 #define STEP 0.15
 #else
-#define STEP 1.0
+#define STEP 4.0 // hires 4 lowres 1
 #endif
 
 

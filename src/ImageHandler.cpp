@@ -12,16 +12,18 @@ using namespace ct;
 
 ImageHandler::ImageHandler() {
   
-  processedImage.allocate(1280, 720, OF_IMAGE_COLOR);
+  processedImage = make_shared<ofImage>();
+  processedImage->allocate(1280, 720, OF_IMAGE_COLOR);
   
 }
 
 void ImageHandler::setOriginal(shared_ptr<ofImage> iPic) {
-  printf("setOriginal");
+  printf("setOriginal\n");
 //  originalImage->clear();
   originalImage = iPic;
   
-  fx.setup(iPic->getWidth(), iPic->getHeight());
+  fx.setup(iPic->getWidth(), iPic-> getHeight());
+//  fx.setup(1280, 720);
   fx.turnOnEffect(EFFECTS::BLUR);
   fx.turnOnEffect(EFFECTS::FINDEDGE);
   fx.turnOnEffect(EFFECTS::BLENDER);
@@ -39,14 +41,14 @@ void ImageHandler::resetOriginal() {
 void ImageHandler::update() {
   if (active) {
     
-    processedImage.update();
+    processedImage->update();
     
     
   }
 }
 
 void ImageHandler::processImage() {
-  printf("processImage");
+  printf("processImage\n");
   
   auto wid = originalImage->getWidth();
   auto hig = originalImage->getHeight();
@@ -54,18 +56,21 @@ void ImageHandler::processImage() {
   int nHi = wid * 720.0/1280.0;
   int buffer = (hig - nHi) / 2.0;
   
-  processedImage.clone(*originalImage);
-  processedImage.crop(0, buffer, wid, nHi);
-  processedImage.resize(1280, 720);
+  processedImage->clone(*originalImage);
   
-//  fx.processImage(originalImage);
+  fx.processImage(processedImage);
+  
+  processedImage->crop(0, buffer, wid, nHi);
+  processedImage->resize(1280, 720);
+  
+//  fx.processImage(processedImage);  
   
 }
 
 void ImageHandler::draw() {
   if (active) {
     
-    processedImage.draw(0.0, 0.0);
+    processedImage->draw(0.0, 0.0);
     
   }
 }

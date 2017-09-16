@@ -20,7 +20,7 @@ namespace ct {
     
     EffectHandler fx;
     shared_ptr<ofImage> originalImage;
-    ofImage processedImage;
+    shared_ptr<ofImage> processedImage;
     
     bool active = true;
     

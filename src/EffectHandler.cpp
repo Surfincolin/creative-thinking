@@ -26,6 +26,8 @@ void EffectHandler::setup(int iWidth, int iHeight) {
   resolution.x = iWidth;
   resolution.y = iHeight;
   
+  printf("Resolution %f, %f\n", resolution.x, resolution.y);
+  
   firstFbo->allocate(resolution.x, resolution.y);
   secondFbo->allocate(resolution.x, resolution.y);
   
@@ -55,13 +57,13 @@ void EffectHandler::turnOffEffect(EFFECTS fx) {
   
 };
 
-void EffectHandler::processImage(ofImage &imageIn) {
+void EffectHandler::processImage(shared_ptr<ofImage> imageIn) {
   
   // Original
   ofImage edges;
   ofImage gBlur;
-  edges.clone(imageIn);
-  gBlur.clone(imageIn);
+  edges.clone(*imageIn);
+  gBlur.clone(*imageIn);
   
   // findEdge
   if (activeEffects.at(EFFECTS::FINDEDGE)) {
@@ -78,13 +80,6 @@ void EffectHandler::processImage(ofImage &imageIn) {
     blender->processEffect(imageIn, edges, gBlur);
   }
   
-  
-//  if ( activeEffects.at(EFFECTS::BLUR) ) {
-//    //Handle Blur
-//    gBlur.processEffect(imageIn);
-//  }
-//  
-//  return imageIn;
   
 };
 

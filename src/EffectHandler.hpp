@@ -34,7 +34,7 @@ namespace ct {
     
     void turnOnEffect(EFFECTS fx);
     void turnOffEffect(EFFECTS fx);
-    void processImage(ofImage &imageIn);
+    void processImage(shared_ptr<ofImage> imageIn);
     
     void setup(int iWidth, int iHeight);
     void update();
