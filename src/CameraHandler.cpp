@@ -12,45 +12,66 @@ using namespace ct;
 
 CameraHandler::CameraHandler() {
   
-  cam.setup(ofGetWidth(), ofGetHeight());
-  camWidth = cam.getWidth();
-  camHeight = cam.getHeight();
-  picSave.allocate(camWidth, camHeight, OF_IMAGE_COLOR);
-  //cam.close();
+  photo.init();
+  bCamIsBusy = false;
+  original = make_shared<ofImage>();
+  original->allocate(1280,720, OF_IMAGE_COLOR);
   
 }
 
-void CameraHandler::standbyForPhoto() {
+void CameraHandler::takePhoto() {
   
-  cam.setup(camWidth, camHeight);
-  active = true;
+  busy = true;
+  photo.startCapture();
   
 }
 
 
-ofImage CameraHandler::takePhoto() {
+shared_ptr<ofImage> CameraHandler::getPhoto() {
   
-  if (active) {
-    picSave = cam.getPixels();
-
-    active = false;
-    cam.close();
-  } else {
-    cout << "The Camera isn't ready to take a photo." << endl;
-  }
-  
-  return picSave;
+  newImage = false;
+  return original;
   
 }
 
 void CameraHandler::update() {
-  if (active) cam.update();
+  
+  if (photo.captureSucceeded()) {
+    printf("Trying to load data...\n");
+    pic = photo.capture();
+    original->setFromPixels(pic, photo.getCaptureWidth(), photo.getCaptureHeight(), OF_IMAGE_COLOR,0);
+    
+    printf("Loading finished!\n");
+    busy = false;
+    newImage = true;
+  }
   
 }
 
 void CameraHandler::draw() {
-  if (active) cam.draw(camWidth, 0.0, -camWidth, camHeight);
+  
+//  ofDrawBitmapString(ofToString(ofGetFrameRate()) + " fps", 20, 20);
+//  ofDrawBitmapString("Press 't' to take a photo", 20, 35);
 }
 
 
-CameraHandler::~CameraHandler() {};
+void CameraHandler::keyPressed(ofKeyEventArgs& eventArgs) {
+//  cout << "a key was pressed" << endl;
+//  if (eventArgs.key == 't') {
+//    if (!photo.isBusy()) {
+//      photo.startCapture();
+//    } else {
+//      printf("Cam is busy.\n");
+//    }
+//  }
+//  
+//  if (eventArgs.key == 'e') {
+//    printf("Closing Camera.\n");
+//    photo.exit();
+//  }
+}
+
+CameraHandler::~CameraHandler() {
+  printf("CameraHandler Exiting.\n");
+  photo.exit();
+};

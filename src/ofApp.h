@@ -15,7 +15,7 @@ class ofApp : public ofBaseApp{
   
   int fN = 7;
   
-  ct::CameraHandler cameraHandler;
+  ct::CameraHandler *cameraHandler = new ct::CameraHandler();
   ct::ImageHandler imageHandler;
   
   ofxPanel gui;

@@ -33,6 +33,9 @@ void ofApp::setup(){
   
   gui.setPosition(w*2 - gui.getWidth(), h - gui.getHeight());
   
+//  ofAddListener(ofEvents().keyPressed, cameraHandler, &CameraHandler::keyPressed);
+  ofAddListener(ofEvents().keyPressed, cameraHandler, &CameraHandler::keyPressed);
+  
 //  cam.setup(w, h);
 //  img.load("img.jpg");
   
@@ -57,8 +60,12 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-  cameraHandler.update();
+  cameraHandler->update();
   imageHandler.update();
+  
+  if (cameraHandler->newPhoto()) {
+    imageHandler.setOriginal( cameraHandler->getPhoto() );
+  }
   
 //  cam.update();
   
@@ -93,7 +100,7 @@ void ofApp::update(){
 void ofApp::draw(){
   ofSetColor(ofColor::white);
   
-  cameraHandler.draw();
+  cameraHandler->draw();
   imageHandler.draw();
   
   
@@ -130,7 +137,9 @@ void ofApp::draw(){
 //  grey.draw(0,0);
 //
 //  fboDodge.draw(0,0);
-  
+
+    ofDrawBitmapString(ofToString(ofGetFrameRate()) + " fps", 20, 20);
+    ofDrawBitmapString("Press 'space' to take a photo", 20, 35);
 
   if (!hideGui) {
     gui.draw();
@@ -165,11 +174,12 @@ void ofApp::keyPressed(int key){
   
   if (key == 'o') {
     imageHandler.resetOriginal();
-    cameraHandler.standbyForPhoto();
+//    cameraHandler->standbyForPhoto();
   }
   
   if (key == ' ') {
-    imageHandler.setOriginal( cameraHandler.takePhoto() );
+//    imageHandler.setOriginal( cameraHandler->takePhoto() );
+    cameraHandler->takePhoto();
   }
   
   

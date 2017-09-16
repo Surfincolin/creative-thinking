@@ -19,14 +19,14 @@ namespace ct {
   private:
     
     EffectHandler fx;
-    ofImage originalImage;
+    shared_ptr<ofImage> originalImage;
     ofImage processedImage;
     
-    bool active = false;
+    bool active = true;
     
   public:
     
-    void setOriginal(ofImage iPic);
+    void setOriginal(shared_ptr<ofImage> iPic);
     void resetOriginal();
     void processImage();
     

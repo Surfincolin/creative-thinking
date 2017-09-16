@@ -10,27 +10,35 @@
 #define CameraHandler_hpp
 
 #include "ofMain.h"
+#include "ofxPhoto.h"
 
 namespace ct {
  
   class CameraHandler {
     
   private:
-    ofVideoGrabber cam;
-    ofImage picSave;
     
-    bool active = true;
+    bool busy = false;
+    bool newImage = false;
     
     int camWidth;
     int camHeight;
     
+    ofxPhoto photo;
+    bool bCamIsBusy;
+    shared_ptr<ofImage> original;
+    unsigned char *pic;
+    
   public:
     
-    void standbyForPhoto();
-    ofImage takePhoto();
+    const bool newPhoto() { return newImage; };
+    void takePhoto();
+    shared_ptr<ofImage> getPhoto();
     
     void update();
     void draw();
+    
+    void keyPressed  (ofKeyEventArgs& eventArgs);
     
     CameraHandler();
     ~CameraHandler();
