@@ -7,6 +7,7 @@
 #include "CameraHandler.hpp"
 #include "ImageHandler.hpp"
 #include "GaussianBlur.hpp"
+#include "ofxBrainWave.h"
 
 class ofApp : public ofBaseApp{
   
@@ -42,7 +43,9 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		
+  
+  float getBData(std::string wave);
+  ofColor getWaveColor(int n);
   
     ofVideoGrabber cam;
   
@@ -69,5 +72,16 @@ class ofApp : public ofBaseApp{
   ofFbo edgePassFbo;
 //  ofFbo fboPassTwo;
   ofFbo fboDodge;
+  
+  ofxBrainWave mindwave;
+  EegData brainData;
+  
+  std::vector<std::string> waves = { "delta", "theta", "hAlpha", "lAlpha", "hBeta", "lBeta", "hGamma", "lGamma", "attention", "meditation" };
+  
+  std::map<std::string, float> highs;
+  
+  std::map<std::string, std::list<float> > graphData;
+  
+  int previousTime = 0;
   
 };
