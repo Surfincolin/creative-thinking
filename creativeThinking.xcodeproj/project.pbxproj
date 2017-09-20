@@ -16,6 +16,7 @@
 		2496C9811F6DBECE00A53FBC /* jsoncpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2496C96E1F6DBECE00A53FBC /* jsoncpp.cpp */; };
 		2496C9841F6DBECE00A53FBC /* ofxJSONElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2496C9731F6DBECE00A53FBC /* ofxJSONElement.cpp */; };
 		24B79C1C1F720CA80086BA28 /* Segmentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24B79C1A1F720CA80086BA28 /* Segmentation.cpp */; };
+		24B79C1F1F723A660086BA28 /* Brain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24B79C1D1F723A660086BA28 /* Brain.cpp */; };
 		24F92DE41F6AFE9C004E3487 /* libgphoto2.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 24F92DE31F6AFE9C004E3487 /* libgphoto2.6.dylib */; };
 		250A95BA26587BE85DB0A353 /* ofxCvColorImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE9C7160245B19131DAE6128 /* ofxCvColorImage.cpp */; };
 		483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78D67A00EB899FAC09430597 /* ofxLabel.cpp */; };
@@ -120,6 +121,8 @@
 		2496C9741F6DBECE00A53FBC /* ofxJSONElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxJSONElement.h; sourceTree = "<group>"; };
 		24B79C1A1F720CA80086BA28 /* Segmentation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Segmentation.cpp; sourceTree = "<group>"; };
 		24B79C1B1F720CA80086BA28 /* Segmentation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Segmentation.hpp; sourceTree = "<group>"; };
+		24B79C1D1F723A660086BA28 /* Brain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Brain.cpp; sourceTree = "<group>"; };
+		24B79C1E1F723A660086BA28 /* Brain.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Brain.hpp; sourceTree = "<group>"; };
 		24F92DE31F6AFE9C004E3487 /* libgphoto2.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgphoto2.6.dylib; path = ../../../../../../../../usr/local/Cellar/libgphoto2/2.5.14_1/lib/libgphoto2.6.dylib; sourceTree = "<group>"; };
 		26E4EEE253C8A6EFC3B3A639 /* warpers.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = warpers.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/stitching/detail/warpers.hpp; sourceTree = SOURCE_ROOT; };
 		26EF3E71A07C6948EAF6709E /* ofxTCPManager.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxTCPManager.h; path = ../../../addons/ofxNetwork/src/ofxTCPManager.h; sourceTree = SOURCE_ROOT; };
@@ -985,6 +988,8 @@
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
+				24B79C1D1F723A660086BA28 /* Brain.cpp */,
+				24B79C1E1F723A660086BA28 /* Brain.hpp */,
 				24B79C1A1F720CA80086BA28 /* Segmentation.cpp */,
 				24B79C1B1F720CA80086BA28 /* Segmentation.hpp */,
 				065FB5EF026EC53362AE0CA9 /* CameraHandler.cpp */,
@@ -1146,6 +1151,7 @@
 				250A95BA26587BE85DB0A353 /* ofxCvColorImage.cpp in Sources */,
 				1D5F3298C2FA073628012944 /* ofxCvContourFinder.cpp in Sources */,
 				169D3C72FDE6C5590A1616F5 /* ofxCvFloatImage.cpp in Sources */,
+				24B79C1F1F723A660086BA28 /* Brain.cpp in Sources */,
 				FB09C6B2A1DA0EA217240CB8 /* ofxCvGrayscaleImage.cpp in Sources */,
 				E212C821D1064B92DD953A42 /* ofxCvHaarFinder.cpp in Sources */,
 				63020F16C7E8DED980111241 /* ofxCvImage.cpp in Sources */,

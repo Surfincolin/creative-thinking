@@ -7,7 +7,7 @@
 #include "CameraHandler.hpp"
 #include "ImageHandler.hpp"
 #include "GaussianBlur.hpp"
-#include "ofxBrainWave.h"
+#include "Brain.hpp"
 #include "Segmentation.hpp"
 
 class ofApp : public ofBaseApp{
@@ -19,6 +19,8 @@ class ofApp : public ofBaseApp{
   
   ct::CameraHandler *cameraHandler = new ct::CameraHandler();
   ct::ImageHandler imageHandler;
+  
+  std::unique_ptr<ct::Brain> brain;
   
   ofxPanel gui;
   ofxIntSlider lowerThreshold;
@@ -43,34 +45,22 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
   
-    float getBData(std::string wave);
-    ofColor getWaveColor(int n);
-  
   
     ofImage pic;
     ofImage img;
   
     bool snapshot;
-
-    ofxBrainWave mindwave;
-    EegData brainData;
-  
-    std::vector<std::string> waves = { "delta", "theta", "hAlpha", "lAlpha", "hBeta", "lBeta", "hGamma", "lGamma", "attention", "meditation" };
-    std::map<std::string, float> highs;
-    std::map<std::string, std::vector<float> > graphData;
-    int previousTime = 0;
   
     ofTrueTypeFont nunitoSans120;
-  int countdown = 0;
-  void analyze();
+    int countdown = 0;
   
-  ofImage pigment;
-  void pigmentUpdater();
+    ofImage pigment;
+    void pigmentUpdater();
   
-  ofFbo pigmentCapture;
-  ofShader pigmentShader;
+    ofFbo pigmentCapture;
+    ofShader pigmentShader;
   
-  unique_ptr<ct::Segmentation> segmenter;
-  std::vector<shared_ptr<ofImage>> layers;
+    unique_ptr<ct::Segmentation> segmenter;
+    std::vector<shared_ptr<ofImage>> layers;
   
 };

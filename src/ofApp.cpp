@@ -15,9 +15,9 @@ void ofApp::setup(){
   
   ofDisableArbTex();
   
+  segmenter = make_unique<Segmentation>();
   img.load("original.jpg");
   img.update();
-  segmenter = make_unique<Segmentation>();
   layers = segmenter->getSegments(img, 4);
   
   ofTrueTypeFont::setGlobalDpi(72);
@@ -46,78 +46,8 @@ void ofApp::setup(){
   
   ofAddListener(ofEvents().keyPressed, cameraHandler, &CameraHandler::keyPressed);
   
-  for (auto w : waves) {
-    highs.insert(make_pair(w, 0));
-    graphData.insert(make_pair(w, vector<float>() ));
-  }
-  
-  for (int i = 0; i < 50; i++) {
-    for (auto w : waves) {
-      graphData.at(w).push_back(0.0);
-    }
-  }
-  
-  mindwave.setup();
-  mindwave.start();
-}
-
-float ofApp::getBData(std::string wave) {
-  float val = 0.0;
-  
-  if (wave == "delta") val =	brainData.delta;
-  if (wave == "theta") val =	brainData.theta;
-  if (wave == "hAlpha") val =	brainData.highAlpha;
-  if (wave == "lAlpha") val =	brainData.lowAlpha;
-  if (wave == "hBeta") val =	brainData.highBeta;
-  if (wave == "lBeta") val =	brainData.lowBeta;
-  if (wave == "hGamma") val =	brainData.highGamma;
-  if (wave == "lGamma") val =	brainData.lowGamma;
-  if (wave == "attention") val =	brainData.attention;
-  if (wave == "meditation") val =	brainData.meditation;
-  
-  return val;
-  
-}
-
-ofColor ofApp::getWaveColor(int n) {
-  
-  float phase = 0;
-  float freq = PI*2/waves.size();
-  int center = 128;
-  int width = 127;
-  
-  int r = sin(freq * n + 2 + phase) * width + center;
-  int g = sin(freq * n + 0 + phase) * width + center;
-  int b = sin(freq * n + 4 + phase) * width + center;
-
-  return ofColor(r, g, b);
-}
-
-void ofApp::analyze() {
-  printf("Analyzing!");
-  
-  vector<float> &ref = graphData.at("theta");
-  int crop = min((int)ref.size(), 10);
-  
-  vector<float> tempData(ref.end() - crop, ref.end() );
-  
-  ofPixelsRef pix = pigment.getPixels();
-  
-  for (auto val : tempData) {
-    val = ofRandom(720.0);
-    printf("theta: %f\n", val);
-    
-    float x = ofRandom(1280.0);
-    float y = ofRandom(720.0);
-    
-    pix.setColor(x, y, ofColor(7, 109, 163, 255));
-    
-  }
-  
-  pigment.update();
-  
-//  7, 109, 163
-  
+  printf("Starting Brain Monitor");
+  brain = make_unique<Brain>();
   
 }
 
@@ -160,36 +90,15 @@ void ofApp::pigmentUpdater() {
 //--------------------------------------------------------------
 void ofApp::update(){
   img.update();
-  brainData = mindwave.getEegData();
+  brain->update();
   
-  for (auto w : waves) {
-    auto v = getBData(w);
-    auto n = highs.at(w);
-    highs.at(w) = (v > n) ? v : n;
-  }
-  
-  int currentTime = ofGetFrameNum() / 60;
-  if (currentTime > previousTime) {
-  
-    for (auto w : waves) {
-      
-      float rel = ofMap(getBData(w), 0.0, highs.at(w), 0.0, 720.0);
-      
-      graphData.at(w).erase(graphData.at(w).begin());
-      graphData.at(w).push_back(rel);
+  if (countdown != 0) {
+    countdown--;
+    if (countdown == 0) {
+      // do stuff after countdown
     }
-    
-    // handle countdown
-    if (countdown != 0) {
-      countdown--;
-      if (countdown == 0) {
-        analyze();
-      }
-    }
-    
-    previousTime = currentTime;
   }
-  
+
 //  pigmentUpdater();
   pigment.update();
   
@@ -207,7 +116,6 @@ void ofApp::draw(){
   
   ofSetColor(ofColor::white);
   ofClear(0,0,0,255);
-//  ofSetBackgroundColor(255, 0, 0);
   
 //  cameraHandler->draw();
 //  imageHandler.draw();
@@ -237,46 +145,7 @@ void ofApp::draw(){
 //  pigment.draw(0, 0);
   auto px2 = pigment.getColor(0, 0);
   
-//  printf("PX:: r: %i, g: %i, b: %i, a: %i\n", px.r, px.g, px.b, px.a);
-//  printf("PX2:: r: %i, g: %i, b: %i, a: %i\n", px2.r, px2.g, px2.b, px2.a);
-  
-  ofSetLineWidth(5);
-  
-  float div = 1280/50;
-  float cN = 0;
-  for (auto w : waves) {
-    ofColor color = getWaveColor(cN);
-    ofSetColor(color);
-    
-    ofVec2f prev(0.0,0.0);
-    int i = 0;
-    for (auto p : graphData.at(w)) {
-      float x = div * (float)i;
-      if (i != 0) {
-        ofDrawLine(prev.x, 720.0-prev.y, x, 720.0-p);
-      }
-      prev.x = x;
-      prev.y = p;
-      i++;
-    }
-    cN++;
-  }
-  
-  ofSetHexColor(0xFFFFFF);
-
-  ofDrawBitmapString(ofToString(ofGetFrameRate()) + " fps", 20, 20);
-  ofDrawBitmapString("Press 'space' to take a photo", 20, 35);
-
-  
-  ofDrawBitmapString("BRAIN DATA", 20, 720-180);
-  cN = 0;
-  for (auto w : waves) {
-    ofColor color = getWaveColor(cN);
-    ofSetColor(color);
-    ofDrawBitmapString(w + ": " + to_string((int)getBData(w)) + " ", 20, 720 - 165 + (15*cN));
-    cN++;
-  }
-  
+  brain->drawGraphOverlay();
   
   if (countdown != 0) {
     ofSetColor(ofColor::white);
@@ -332,7 +201,7 @@ void ofApp::keyPressed(int key){
   if (key == 'r') {
 //    countdown = 10;
     // record
-    analyze();
+//    analyze();
   }
   
   
