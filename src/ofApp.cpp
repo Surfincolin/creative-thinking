@@ -9,19 +9,25 @@ using namespace ct;
 void ofApp::setup(){
   ofBackground(0,0,0);
   
-  
   //  ofSetWindowShape(w*2, h);
   //  ofSetWindowPosition(10, 10);
   
-  //gBlur = make_shared<ct::GaussianBlur>(w,h);
-  
   
   ofDisableArbTex();
-  chromaticShader.load("shaders/passthrough.vert", "shaders/chromaticShader.frag");
-  colorDodge.load("shaders/passthrough.vert", "shaders/colorDodge.frag");
-  findEdge.load("shaders/passthrough.vert", "shaders/findEdge.frag");
-//  blurX.load("shaders/blurX");
-//  blurY.load("shaders/blurY");
+  
+  ofTrueTypeFont::setGlobalDpi(72);
+  nunitoSans120.load("fonts/Nunito_Sans/NunitoSans-Regular.ttf", 120, true, true);
+  
+  pigment.allocate(1280, 720, OF_IMAGE_COLOR_ALPHA);
+  pigmentCapture.allocate(1280, 720, GL_RGBA);
+  pigmentShader.load("shaders/passthrough.vert", "shaders/pigmentShader.frag");
+
+  for (int x = 0; x < 1280; x++) {
+    for (int y = 0; y < 720; y++) {
+      pigment.setColor(x, y, ofColor(7, 109, 163,0));
+    }
+  }
+  pigment.update();
   
   snapshot = false;
   hideGui = false;
@@ -31,35 +37,13 @@ void ofApp::setup(){
   gui.add(upperThreshold.setup("Upper Threshold", 150, 0, 255));
   gui.add(blurPasses.setup("Blur Passes", 6, 0, 15));
   
-  gui.setPosition(w*2 - gui.getWidth(), h - gui.getHeight());
+  gui.setPosition(w - gui.getWidth(), h - gui.getHeight());
   
-//  ofAddListener(ofEvents().keyPressed, cameraHandler, &CameraHandler::keyPressed);
   ofAddListener(ofEvents().keyPressed, cameraHandler, &CameraHandler::keyPressed);
-  
-//  cam.setup(w, h);
-//  img.load("img.jpg");
-  
-  
-//  colorImg.allocate(w, h);
-//  grey.allocate(w, h);
-//  canny.allocate(w, h);
-//  hsb.allocate(w,h);
-//  invertedGrey.allocate(w,h);
-  
-//  edgePassFbo.allocate(w, h);
-//  fboPassTwo.allocate(w, h);
-//  fboDodge.allocate(w, h);
-
-
-//  faces.setup("haarcascade_frontalface_alt.xml");
-  
-//  plane.set(w, h, 10, 10);
-//  plane.mapTexCoords(0, 480.0, 640.0, 0);
-  //  plane.mapTexCoordsFromTexture(img.getTexture());
   
   for (auto w : waves) {
     highs.insert(make_pair(w, 0));
-    graphData.insert(make_pair(w, list<float>() ));
+    graphData.insert(make_pair(w, vector<float>() ));
   }
   
   for (int i = 0; i < 50; i++) {
@@ -104,6 +88,70 @@ ofColor ofApp::getWaveColor(int n) {
   return ofColor(r, g, b);
 }
 
+void ofApp::analyze() {
+  printf("Analyzing!");
+  
+  vector<float> &ref = graphData.at("theta");
+  int crop = min((int)ref.size(), 10);
+  
+  vector<float> tempData(ref.end() - crop, ref.end() );
+  
+  ofPixelsRef pix = pigment.getPixels();
+  
+  for (auto val : tempData) {
+    val = ofRandom(720.0);
+    printf("theta: %f\n", val);
+    
+    float x = ofRandom(1280.0);
+    float y = ofRandom(720.0);
+    
+    pix.setColor(x, y, ofColor(7, 109, 163, 255));
+    
+  }
+  
+  pigment.update();
+  
+//  7, 109, 163
+  
+  
+}
+
+void ofApp::pigmentUpdater() {
+  
+  ofPixelsRef pix = pigment.getPixels();
+  
+  for (int x = 0; x < 1280; x++) {
+    for (int y = 0; y < 720; y++) {
+      
+      ofColor c = pix.getColor(x, y);
+      
+      if (c.a > 0) {
+        ofColor cT = pix.getColor(x, y-1);
+        ofColor cB = pix.getColor(x, y+1);
+        ofColor cL = pix.getColor(x-1, y);
+        ofColor cR = pix.getColor(x+1, y);
+        
+        ofColor nuC = c;
+        nuC.a *= .95;
+        
+        if (cT.a == 0) pix.setColor(x, y-1, nuC);
+        if (cB.a == 0) pix.setColor(x, y+1, nuC);
+        if (cL.a == 0) pix.setColor(x-1, y, nuC);
+        if (cR.a == 0) pix.setColor(x+1, y, nuC);
+        
+        
+      }
+      
+      c.a *= .95;
+      pix.setColor(x, y, c);
+    }
+  }
+  
+  pigment.update();
+  
+  
+}
+
 //--------------------------------------------------------------
 void ofApp::update(){
   brainData = mindwave.getEegData();
@@ -121,12 +169,23 @@ void ofApp::update(){
       
       float rel = ofMap(getBData(w), 0.0, highs.at(w), 0.0, 720.0);
       
-      graphData.at(w).pop_front();
+      graphData.at(w).erase(graphData.at(w).begin());
       graphData.at(w).push_back(rel);
+    }
+    
+    // handle countdown
+    if (countdown != 0) {
+      countdown--;
+      if (countdown == 0) {
+        analyze();
+      }
     }
     
     previousTime = currentTime;
   }
+  
+//  pigmentUpdater();
+  pigment.update();
   
   cameraHandler->update();
   imageHandler.update();
@@ -134,83 +193,48 @@ void ofApp::update(){
   if (cameraHandler->newPhoto()) {
     imageHandler.setOriginal( cameraHandler->getPhoto() );
   }
-  
-//  cam.update();
-  
-//  if (cam.isFrameNew()) {
-  
-    // copy webcam pixels
-//    colorImg.setFromPixels(cam.getPixels());
-//    
-//    // mirror horizontally
-//    colorImg.mirror(false, true);
-//    
-//    // convert to hsb
-//    hsb = colorImg;
-//    hsb.convertRgbToHsv();
-//    
-//    // create grey scale version
-//    hsb.convertToGrayscalePlanarImage(grey, 2);
-    
-
-//    cvCanny(colorImg.getCvImage(), canny.getCvImage(), lowerThreshold, upperThreshold);
-//    canny.flagImageChanged();
-    
-//    faces.findHaarObjects(colorImg.getPixels());
-    
-    
-    
-//  }
 
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+  
   ofSetColor(ofColor::white);
+  ofClear(0,0,0,255);
+//  ofSetBackgroundColor(255, 0, 0);
   
-  cameraHandler->draw();
-  imageHandler.draw();
+//  cameraHandler->draw();
+//  imageHandler.draw();
+  auto px = pigment.getColor(0, 0);
   
+//  ofEnableBlendMode(OF_BLENDMODE_DISABLED);
   
-//  float opacity = ofMap(mouseX, 0, ofGetWidth(), 0.0, 1.0, true);
-////  float blur = ofMap(mouseX, 0, ofGetWidth(), 0, 1.0, true);
-//  float alpha = ofMap(mouseX, 0, ofGetWidth(), 0.0, 2.0, true);
-//  float beta = ofMap(mouseY, 0, ofGetHeight(), -100.0/255.0, 100.0/255.0, true);
-//  
-//  
-//  edgePassFbo.begin();
-//  ofClear(255);
-//  findEdge.begin();
-//  findEdge.setUniform2f("resolution", w, h);
-//  cam.draw(0, 0, w, h);
-//  findEdge.end();
-//  edgePassFbo.end();
-//
-//  auto blurred = gBlur->blurImage(cam, blurPasses);
-//  blurred->mirror(true, true);
-//
-//  fboDodge.begin();
-//  ofClear(255);
-//  colorDodge.begin();
-//  colorDodge.setUniformTexture("image", grey.getTexture(), 1);
-//  colorDodge.setUniformTexture("edges", edgePassFbo.getTexture(), 2);
-//  colorDodge.setUniform1f("opacity", opacity);
-//  colorDodge.setUniform1i("fN", fN);
-//  colorDodge.setUniform1f("alpha", alpha);
-//  colorDodge.setUniform1f("beta", beta);
-//  blurred->draw(0,0);
-//  colorDodge.end();
-//  fboDodge.end();
-//
-//  grey.draw(0,0);
-//
-//  fboDodge.draw(0,0);
+  ofDisableAlphaBlending();
+  pigmentCapture.begin();
+  ofClear(0,0,0,255);
+  pigmentShader.begin();
+  pigmentShader.setUniformTexture("tex0", pigment.getTexture(), 0);
+//  pigment.draw(0, 0);
+  ofDrawRectangle(0, 0, 1280, 720);
+  pigmentShader.end();
+  pigmentCapture.end();
+  
+  ofEnableAlphaBlending();
+  pigment.draw(0, 0);
+//  pigmentCapture.draw(0,0);
   
   
+  ofPixels pC;
+  pC.allocate(1280, 720, OF_PIXELS_RGBA);
+  pigmentCapture.readToPixels(pC);
+  pigment.setFromPixels(pC);
+//  pigment.draw(0, 0);
+  auto px2 = pigment.getColor(0, 0);
   
+//  printf("PX:: r: %i, g: %i, b: %i, a: %i\n", px.r, px.g, px.b, px.a);
+//  printf("PX2:: r: %i, g: %i, b: %i, a: %i\n", px2.r, px2.g, px2.b, px2.a);
   
   ofSetLineWidth(5);
-//  ofSetHexColor(0xFF0000);
   
   float div = 1280/50;
   float cN = 0;
@@ -231,13 +255,11 @@ void ofApp::draw(){
     }
     cN++;
   }
-
-//  ofDrawLine(20, 720/2, 1200, 720/5);
   
   ofSetHexColor(0xFFFFFF);
-  
-    ofDrawBitmapString(ofToString(ofGetFrameRate()) + " fps", 20, 20);
-    ofDrawBitmapString("Press 'space' to take a photo", 20, 35);
+
+  ofDrawBitmapString(ofToString(ofGetFrameRate()) + " fps", 20, 20);
+  ofDrawBitmapString("Press 'space' to take a photo", 20, 35);
 
   
   ofDrawBitmapString("BRAIN DATA", 20, 720-180);
@@ -248,6 +270,16 @@ void ofApp::draw(){
     ofDrawBitmapString(w + ": " + to_string((int)getBData(w)) + " ", 20, 720 - 165 + (15*cN));
     cN++;
   }
+  
+  
+  if (countdown != 0) {
+    ofSetColor(ofColor::white);
+    ofRectangle bb = nunitoSans120.getStringBoundingBox(to_string(countdown), 0, 0);
+    auto h = 1280/2 - bb.getWidth()/2;
+    auto v = 720/2 + bb.getHeight()/2;
+    nunitoSans120.drawString(to_string(countdown), h, v);
+  }
+  
 
   if (!hideGui) {
     gui.draw();
@@ -268,7 +300,6 @@ void ofApp::keyPressed(int key){
   }
   
   if (key == 109) {
-    pic = canny.getPixels();
     snapshot = true;
   }
   
@@ -282,12 +313,16 @@ void ofApp::keyPressed(int key){
   
   if (key == 'o') {
     imageHandler.resetOriginal();
-//    cameraHandler->standbyForPhoto();
   }
   
   if (key == ' ') {
-//    imageHandler.setOriginal( cameraHandler->takePhoto() );
     cameraHandler->takePhoto();
+  }
+  
+  if (key == 'r') {
+//    countdown = 10;
+    // record
+    analyze();
   }
   
   

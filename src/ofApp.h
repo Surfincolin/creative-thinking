@@ -24,8 +24,6 @@ class ofApp : public ofBaseApp{
   ofxIntSlider upperThreshold;
   ofxIntSlider blurPasses;
   bool hideGui;
-
-  //shared_ptr<ct::GaussianBlur> gBlur;
   
 	public:
 		void setup();
@@ -44,44 +42,31 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
   
-  float getBData(std::string wave);
-  ofColor getWaveColor(int n);
-  
-    ofVideoGrabber cam;
-  
-    ofxCvColorImage colorImg;
-    ofxCvGrayscaleImage grey;
-    ofxCvGrayscaleImage invertedGrey;
-    ofxCvGrayscaleImage canny;
-    ofxCvColorImage hsb;
+    float getBData(std::string wave);
+    ofColor getWaveColor(int n);
   
   
-    ofxCvHaarFinder faces;
+    ofImage pic;
+    ofImage img;
   
-  ofImage pic;
-  ofImage img;
-  ofPlanePrimitive plane;
-  
-  bool snapshot;
-  
-  ofShader chromaticShader;
-  ofShader colorDodge;
-  ofShader findEdge;
+    bool snapshot;
 
+    ofxBrainWave mindwave;
+    EegData brainData;
   
-  ofFbo edgePassFbo;
-//  ofFbo fboPassTwo;
-  ofFbo fboDodge;
+    std::vector<std::string> waves = { "delta", "theta", "hAlpha", "lAlpha", "hBeta", "lBeta", "hGamma", "lGamma", "attention", "meditation" };
+    std::map<std::string, float> highs;
+    std::map<std::string, std::vector<float> > graphData;
+    int previousTime = 0;
   
-  ofxBrainWave mindwave;
-  EegData brainData;
+    ofTrueTypeFont nunitoSans120;
+  int countdown = 0;
+  void analyze();
   
-  std::vector<std::string> waves = { "delta", "theta", "hAlpha", "lAlpha", "hBeta", "lBeta", "hGamma", "lGamma", "attention", "meditation" };
+  ofImage pigment;
+  void pigmentUpdater();
   
-  std::map<std::string, float> highs;
-  
-  std::map<std::string, std::list<float> > graphData;
-  
-  int previousTime = 0;
+  ofFbo pigmentCapture;
+  ofShader pigmentShader;
   
 };
