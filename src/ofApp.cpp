@@ -15,6 +15,11 @@ void ofApp::setup(){
   
   ofDisableArbTex();
   
+  img.load("original.jpg");
+  img.update();
+  segmenter = make_unique<Segmentation>();
+  layers = segmenter->getSegments(img, 4);
+  
   ofTrueTypeFont::setGlobalDpi(72);
   nunitoSans120.load("fonts/Nunito_Sans/NunitoSans-Regular.ttf", 120, true, true);
   
@@ -154,6 +159,7 @@ void ofApp::pigmentUpdater() {
 
 //--------------------------------------------------------------
 void ofApp::update(){
+  img.update();
   brainData = mindwave.getEegData();
   
   for (auto w : waves) {
@@ -280,7 +286,11 @@ void ofApp::draw(){
     nunitoSans120.drawString(to_string(countdown), h, v);
   }
   
-
+  ofSetColor(ofColor::white);
+  for (auto &layer : layers) {
+    layer->draw(0, 0);
+  }
+  
   if (!hideGui) {
     gui.draw();
   }

@@ -8,6 +8,7 @@
 #include "ImageHandler.hpp"
 #include "GaussianBlur.hpp"
 #include "ofxBrainWave.h"
+#include "Segmentation.hpp"
 
 class ofApp : public ofBaseApp{
   
@@ -68,5 +69,8 @@ class ofApp : public ofBaseApp{
   
   ofFbo pigmentCapture;
   ofShader pigmentShader;
+  
+  unique_ptr<ct::Segmentation> segmenter;
+  std::vector<shared_ptr<ofImage>> layers;
   
 };
