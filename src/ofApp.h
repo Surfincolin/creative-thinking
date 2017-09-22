@@ -9,6 +9,7 @@
 #include "GaussianBlur.hpp"
 #include "Brain.hpp"
 #include "Segmentation.hpp"
+#include "WaterColorController.hpp"
 
 class ofApp : public ofBaseApp{
   
@@ -54,13 +55,10 @@ class ofApp : public ofBaseApp{
     ofTrueTypeFont nunitoSans120;
     int countdown = 0;
   
-    ofImage pigment;
-    void pigmentUpdater();
-  
-    ofFbo pigmentCapture;
-    ofShader pigmentShader;
-  
     unique_ptr<ct::Segmentation> segmenter;
     std::vector<shared_ptr<ofImage>> layers;
+  
+  ct::WaterColorController *watercolor = new ct::WaterColorController();
+  
   
 };
