@@ -32,9 +32,8 @@ shared_ptr<ofFbo> PigmentLayer::update(shared_ptr<ofFbo> water, shared_ptr<ofFbo
   shader.end();
   temp->end();
   
-  shared_ptr<ofFbo> swap = fbo;
-  fbo = temp;
-  return swap;
+  std::swap(fbo,temp);
+  return temp;
 
 }
 

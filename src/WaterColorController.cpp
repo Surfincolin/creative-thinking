@@ -17,7 +17,6 @@ WaterColorController::WaterColorController() {
 //--------------------------------------------------------------
 void WaterColorController::setup() {
   ofSetLogLevel(OF_LOG_ERROR);
-//  ofSetBackgroundAuto(false);
   
   bg.load("bg_white.png");
   brush.load("brush.png");
@@ -31,11 +30,6 @@ void WaterColorController::setup() {
   state = STATE_MIX;
   currentPigment = 0;
   width = 120;
-  
-  test.allocate(1280, 720);
-  test.begin();
-  ofClear(0, 0, 0, 255);
-  test.end();
   
 }
 
@@ -62,22 +56,22 @@ void WaterColorController::update(){
 }
 
 //--------------------------------------------------------------
-void WaterColorController::draw(){
+shared_ptr<ofFbo> WaterColorController::draw(){
 
   
-  canvas.draw();
+  return canvas.draw();
 
-  glBlendFunc(GL_ZERO, GL_SRC_COLOR);
-  bg.draw(0,0);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//  brush.draw(0,0);
+//  glBlendFunc(GL_ZERO, GL_SRC_COLOR);
+//  bg.draw(0,0);
+//  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
   
-  string str;
-  if (state == STATE_WATER) { str = "water"; }
-  if (state == STATE_PIGMENT) { str = "pigment"; }
-  if (state == STATE_MIX) { str = "mix"; }
-  str += "  width: " + ofToString(width) + "  pigment: " + ofToString(currentPigment);
-  ofDrawBitmapString(str, 20, 20);
+//  string str;
+//  if (state == STATE_WATER) { str = "water"; }
+//  if (state == STATE_PIGMENT) { str = "pigment"; }
+//  if (state == STATE_MIX) { str = "mix"; }
+//  str += "  width: " + ofToString(width) + "  pigment: " + ofToString(currentPigment);
+//  ofDrawBitmapString(str, 20, 20);
 }
 
 //--------------------------------------------------------------

@@ -59,6 +59,6 @@ class ofApp : public ofBaseApp{
     std::vector<shared_ptr<ofImage>> layers;
   
   ct::WaterColorController *watercolor = new ct::WaterColorController();
-  
+  std::shared_ptr<ofFbo> water;
   
 };

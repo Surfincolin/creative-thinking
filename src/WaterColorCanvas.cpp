@@ -29,43 +29,63 @@ WaterColorCanvas::WaterColorCanvas() {
   paperFboTwo->allocate(1280, 720, GL_RGBA32F);
   clearLayers();
 
+  master = make_shared<ofFbo>();
+  master->allocate(1280, 720, GL_RGBA32F);
+  master->begin();
+  ofClear(255, 255, 255,0);
+  master->end();
 }
 
 //--------------------------------------------------------------
 void WaterColorCanvas::update() {
   noiseFbo = applyShader(noiseShader, noiseFbo, SHADING_TYPE_NOISE);
+  
   for (int i = 0; i < pigments.size(); i ++) {
     tempFbo = pigments[i].update(waterFbo, noiseFbo, tempFbo, pigmentShader);
   }
+
   waterFbo = applyShader(waterBleedingShader, waterFbo, SHADING_TYPE_WATER_BLEEDING);
+  
   for (int i = 0; i < pigments.size(); i ++)  {
-//    printf(".");
     paperFbo = applyShader(pigmentFixShader, paperFbo, SHADING_TYPE_PIGMENT_FIX, i);
   }
-////  printf("_\n");
+
   paperFbo = applyShader(blurShader, paperFbo, SHADING_TYPE_BLUR);
 }
 
 //--------------------------------------------------------------
-void WaterColorCanvas::draw() {
+shared_ptr<ofFbo> WaterColorCanvas::draw() {
 
-//  noiseFbo->draw(0, 0);
+  master->begin();
+  
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   waterRenderShader.begin();
-//  waterRenderShader.setUniformTexture("tex0", waterFbo->getTexture(), 0);
   waterFbo->draw(0, 0);
   waterRenderShader.end();
-//
+
   glBlendFunc(GL_ZERO, GL_SRC_COLOR);
   paperFbo->draw(0, 0);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-////
+  
+  master->end();
+  
   for (int i = 0; i < pigments.size(); i ++)  {
     tempFbo = applyShader(pigmentRenderShader, pigments[i].fbo, SHADING_TYPE_PIGMENT_RENDER, i);
+  
+    master->begin();
     glBlendFunc(GL_ZERO, GL_SRC_COLOR);
     tempFbo->draw(0,0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    master->end();
+    
   }
+  
+//  glDisable(GL_BLEND);
+//  ofEnableAlphaBlending();
+//  ofBlendMode(OF_BLENDMODE_SCREEN);
+//  master->draw(0, 0);
+  return master;
+//  ofBlendMode(OF_BLENDMODE_ALPHA);
 }
 
 //--------------------------------------------------------------
@@ -104,9 +124,8 @@ shared_ptr<ofFbo> WaterColorCanvas::applyShader(ofShader& shader, shared_ptr<ofF
   shader.end();
   tempFbo->end();
   
-  shared_ptr<ofFbo> swap = tempFbo;
-  tempFbo = fbo;
-  return swap;
+  std::swap(tempFbo, fbo);
+  return fbo;
 }
 
 //--------------------------------------------------------------

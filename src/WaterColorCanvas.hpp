@@ -19,7 +19,7 @@ class WaterColorCanvas {
 public:
   WaterColorCanvas();
   void update();
-  void draw();
+  std::shared_ptr<ofFbo> draw();
   void addPigment(ofColor color);
   void beginPigmentDraw(int i);
   void endPigmentDraw();
@@ -27,6 +27,7 @@ public:
   void endWaterDraw();
   void clearLayers();
   void clearPigments();
+  
   bool pressed;
   
 private:
@@ -51,6 +52,8 @@ private:
   static const int SHADING_TYPE_PIGMENT_FIX = 3;
   static const int SHADING_TYPE_PIGMENT_RENDER = 4;
   static const int SHADING_TYPE_BLUR = 5;
+  
+  std::shared_ptr<ofFbo> master;
 };
 
 #endif /* WaterColorCanvas_hpp */

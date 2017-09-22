@@ -24,7 +24,7 @@ namespace ct {
     
     void setup();
     void update();
-    void draw();
+    std::shared_ptr<ofFbo> draw();
     
     void strokeDraw();
     void clearLayers();
@@ -51,7 +51,6 @@ namespace ct {
     static const int STATE_PIGMENT = 1;
     static const int STATE_MIX = 2;
     
-    ofFbo test;
   };
   
 }

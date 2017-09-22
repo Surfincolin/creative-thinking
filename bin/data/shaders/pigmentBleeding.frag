@@ -11,11 +11,14 @@ uniform vec2 resolution = vec2(1280.0, 720.0);
 
 void main (void){
   vec2 uv = gl_FragCoord.xy / resolution;
+//  uv = vec2(uv.x, 1.0-uv.y);
+  vec2 iUV = vec2(uv.x, 1.0 - uv.y);
   vec2 pw = 1. / resolution;
   
 	vec4 noiseTex = texture(noise, uv);
 	vec2 bleedVec = -(noiseTex.xy - 0.5) * 2.0;
 	vec4 waterTex = texture(water, uv);
+  
 	vec4 pigTex0 = texture(tex0, uv);
 	vec4 pigTex1 = texture(tex0, uv + vec2(-1.0, 0.5) * pw);
 	vec4 pigTex2 = texture(tex0, uv + vec2(-0.5, -1.0) * pw);
