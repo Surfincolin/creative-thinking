@@ -14,7 +14,7 @@ void main (void){
   vec2 uv = gl_FragCoord.xy / resolution;
 //  uv = vec2(uv.x, 1.0-uv.y);
   
-  vec2 pw = 1.0 / resolution;
+  vec2 pw = 2.0 / resolution;
   
 	vec4 tex0c = texture(tex0, uv);
 

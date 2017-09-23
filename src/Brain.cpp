@@ -113,11 +113,11 @@ void Brain::drawGraphOverlay() {
   ofSetLineWidth(5);
   
   const int width = ofGetWidth();
-  const int height = ofGetHeight();
+  const int height = ofGetHeight() / 3;
 //  ofClear(255, 255, 255);
   float div = width/segments;
   float cN = 0;
-  for (auto w : waves) {
+  for (auto &w : waves) {
     ofColor color = getWaveColor(cN);
     ofSetColor(color);
     
@@ -138,8 +138,8 @@ void Brain::drawGraphOverlay() {
   
   ofSetHexColor(0xFFFFFF);
   
-  ofDrawBitmapString(ofToString(ofGetFrameRate()) + " fps", 20, 20);
-  ofDrawBitmapString("Press 'space' to take a photo", 20, 35);
+//  ofDrawBitmapString(ofToString(ofGetFrameRate()) + " fps", 20, 20);
+//  ofDrawBitmapString("Press 'space' to take a photo", 20, 35);
   
   
   ofDrawBitmapString("BRAIN DATA", 20, height-180);
@@ -151,5 +151,13 @@ void Brain::drawGraphOverlay() {
     cN++;
   }
 
+  
+}
+
+void Brain::zeroOutData() {
+  
+  for (auto &w : waves) {
+    fill(graphData.at(w).begin(), graphData.at(w).end(), 0.0);
+  }
   
 }

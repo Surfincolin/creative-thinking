@@ -58,6 +58,9 @@ class ofApp : public ofBaseApp{
   void paintBrainData();
   void randomPosition();
   void nextState();
+  void saveFinalToImage();
+  
+  ofImage imgSaver;
   
     ofColor getNextColor(int n);
   

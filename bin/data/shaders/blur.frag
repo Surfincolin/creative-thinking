@@ -12,7 +12,7 @@ uniform vec2 resolution = vec2(1280.0, 720.0);
 void main (void){
   vec2 uv = gl_FragCoord.xy / resolution;
 //  uv = vec2(uv.x, 1.0-uv.y);
-  vec2 pw = 1. / resolution;
+  vec2 pw = 2. / resolution;
   
 	vec4 noiseTex = texture(noise, uv);
 	vec4 waterTex = texture(water, uv);

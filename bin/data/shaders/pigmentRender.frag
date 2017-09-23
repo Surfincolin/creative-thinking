@@ -13,7 +13,7 @@ uniform vec2 resolution = vec2(1280.0, 720.0);
 void main (void){
   vec2 uv = gl_FragCoord.xy / resolution;
 //  uv = vec2(uv.x, 1.0-uv.y);
-  vec2 pw = 1. / resolution;
+  vec2 pw = 2. / resolution;
   
 	vec4 tex0c = texture(tex0, uv);
 	
@@ -22,4 +22,5 @@ void main (void){
 	vec4 outCol = mix(vec4(1.0), color, pigment / 1.5);
 	
 	outputColor = vec4(outCol);
+  
 }

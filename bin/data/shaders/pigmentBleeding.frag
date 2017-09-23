@@ -13,7 +13,7 @@ void main (void){
   vec2 uv = gl_FragCoord.xy / resolution;
 //  uv = vec2(uv.x, 1.0-uv.y);
   vec2 iUV = vec2(uv.x, 1.0 - uv.y);
-  vec2 pw = 1. / resolution;
+  vec2 pw = 2. / resolution;
   
 	vec4 noiseTex = texture(noise, uv);
 	vec2 bleedVec = -(noiseTex.xy - 0.5) * 2.0;

@@ -33,7 +33,7 @@ public:
 private:
   
   std::shared_ptr<ofFbo> applyShader(ofShader& shader, std::shared_ptr<ofFbo> fbo, int type, int pigmentNum = 0);
-  void clearFbo(std::shared_ptr<ofFbo> fbo, int r, int g, int b);
+  void clearFbo(std::shared_ptr<ofFbo> fbo, int r, int g, int b, int a);
   
   ofColor color;
   ofShader noiseShader, waterBleedingShader, waterRenderShader, pigmentFixShader, pigmentRenderShader, blurShader, pigmentShader;;

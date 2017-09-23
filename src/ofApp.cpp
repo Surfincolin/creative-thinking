@@ -31,9 +31,11 @@ void ofApp::setup(){
   background = imageHandler.getProcessedImage();
   brush.load("brush.png");
   
+  imgSaver.allocate(w, h, OF_IMAGE_COLOR);
+  
   int i = 0;
-  for (auto &w : brain->waves) {
-    previousValues.insert(make_pair(w, 0.0));
+  for (auto &wa : brain->waves) {
+    previousValues.insert(make_pair(wa, 0.0));
     brushPositions.push_back(ofVec2f(0));
     ofColor c = getNextColor(i);
     watercolor->addColor(c);
@@ -45,6 +47,8 @@ void ofApp::setup(){
 
 void ofApp::nextState() {
   state = (state == 7) ? 0 : state + 1;
+  cout << "current state: " << state << endl;
+  serviceStarter();
 }
 
 //--------------------------------------------------------------
@@ -65,10 +69,14 @@ ofColor ofApp::getNextColor(int n) {
 void ofApp::serviceStarter() {
   
   if (state == RESTART) {
+    background->clear();
+    brain->zeroOutData();
+    watercolor->canvas.clearLayers();
+    nextState();
   }
   
   if (state == TAKE_PHOTO) {
-    background->clear();
+//    background->clear();
     cameraHandler->takePhoto();
   }
   
@@ -122,7 +130,7 @@ void ofApp::draw(){
   }
   
   if (state == READY) {
-    ofDrawBitmapString("READY!! Press 'space' to begin.", 20, 35);
+    ofDrawBitmapString("READY!! Press the button to begin.", 20, 35);
   }
   
   if (state == INSTRUCTION_1) {
@@ -150,14 +158,10 @@ void ofApp::draw(){
   if (state == BRAIN_DATA) {
     ofSetColor(255, 255, 255);
     ofDrawRectangle(0, 0, w, h);
-    
-//    if (enough > 0) {
-//      printf("p");
-      paintBrainData();
-//    }
+  
+    paintBrainData();
 
 //    ofBlendMode(OF_BLENDMODE_SCREEN);
-//    background->draw(0, 0);
 //
     background->draw(0, 0);
     
@@ -182,11 +186,22 @@ void ofApp::draw(){
     
     ofSetColor(0, 0, 0);
     ofDrawBitmapString("Great! This is your mind selfie!", 20, 35);
+    ofDrawBitmapString("Hit the button to save and restart.", 20, 65);
   }
   
   if (state == FINALIZE) {
 
-    ofDrawBitmapString("Saving...", 20, 35);
+    ofSetColor(255, 255, 255);
+    ofDrawRectangle(0, 0, w, h);
+    background->draw(0, 0);
+    
+    water = watercolor->draw();
+    glBlendFunc(GL_ZERO, GL_SRC_COLOR);
+    water->draw(0, 0);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    saveFinalToImage();
+    
   }
   
 }
@@ -194,17 +209,17 @@ void ofApp::draw(){
 void ofApp::paintBrainData() {
   
   
-  int hz = ofGetWidth() * 0.9;
-  int vr = ofGetHeight() * 0.9;
-  int side = ofGetWidth() * 0.1 / 2;
+  int hz = ofGetWidth() * 0.8;
+  int vr = ofGetHeight() * 0.5;
+  int side = ofGetWidth() * 0.2 / 2;
   int top = ofGetHeight() * 0.1 / 2;
   
 //  cout << hz << ":" << vr << ", " << side << ":" << top << endl;
   
   int i = 0;
-  for (auto &w : brain->waves) {
+  for (auto &wa : brain->waves) {
     int counter = 0;
-    float width = 120 * brain->latestData->at(w);
+    float width = 120 * brain->latestData->at(wa);
     float currentWidth = width;
     ofVec2f pos = {side+ofRandom(hz) , top+ofRandom(vr)};
     ofVec2f target = ofVec2f(0);
@@ -263,12 +278,39 @@ void ofApp::paintBrainData() {
 
 }
 
+void ofApp::saveFinalToImage() {
+  
+  time_t timer;
+  char buffer[26];
+  struct tm* tm_info;
+  
+  time(&timer);
+  tm_info = localtime(&timer);
+  
+  strftime(buffer, 26, "%Y-%m-%d_%H-%M-%S", tm_info);
+  string filename(buffer);
+  filename = filename + ".png";
+  
+  string fullPath = "saved/" + filename;
+  
+  imgSaver.grabScreen(0, 0, w, h);
+  
+  ofSetColor(255, 255, 33);
+  ofDrawBitmapString("Saving...", 20, 35);
+  
+  imgSaver.save(fullPath);
+  
+  nextState();
+  
+}
+
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 
 //  cout << "You Pressed: " << key << endl;
 //  109 - m
 //  99 - c
+//  cout << key << endl;
   
   int num = key - 48;
   
@@ -296,14 +338,16 @@ void ofApp::keyPressed(int key){
 //    cameraHandler->takePhoto();
 //    state++;
     nextState();
-    serviceStarter();
+    
   }
   if (key == 'b') {
 //    begin();
   }
   
   if (key == 'r') {
-    countdown = 10;
+    state = 0;
+    serviceStarter();
+//    countdown = 10;
     // record
 //    analyze();
   }

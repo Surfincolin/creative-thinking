@@ -30,13 +30,11 @@ WaterColorCanvas::WaterColorCanvas() {
   paperFbo->allocate(width, height, GL_RGBA32F); //fixed color
   paperFboTwo = make_shared<ofFbo>();
   paperFboTwo->allocate(width, height, GL_RGBA32F);
-  clearLayers();
+  
 
   master = make_shared<ofFbo>();
   master->allocate(width, height, GL_RGBA32F);
-  master->begin();
-  ofClear(255, 255, 255,0);
-  master->end();
+  clearLayers();
 }
 
 //--------------------------------------------------------------
@@ -159,19 +157,20 @@ void WaterColorCanvas::endWaterDraw() {
 
 //--------------------------------------------------------------
 void WaterColorCanvas::clearLayers() {
-  clearFbo(waterFbo, 0, 0, 0);
-  clearFbo(paperFbo, 255, 255, 255);
-  clearFbo(paperFboTwo, 255, 255, 255);
+  clearFbo(waterFbo, 0, 0, 0, 255);
+  clearFbo(paperFbo, 255, 255, 255, 255);
+  clearFbo(paperFboTwo, 255, 255, 255, 255);
+  clearFbo(master, 255, 255, 255, 0);
   
   for (int i = 0; i < pigments.size(); i ++) {
-    clearFbo(pigments[i].fbo, 0, 0, 0);
+    clearFbo(pigments[i].fbo, 0, 0, 0, 255);
   }
 }
 
 //--------------------------------------------------------------
-void WaterColorCanvas::clearFbo(shared_ptr<ofFbo> fbo, int r, int g, int b) {
+void WaterColorCanvas::clearFbo(shared_ptr<ofFbo> fbo, int r, int g, int b, int a) {
   fbo->begin();
-  ofClear(r, g, b, 255);
+  ofClear(r, g, b, a);
   fbo->end();
 }
 
