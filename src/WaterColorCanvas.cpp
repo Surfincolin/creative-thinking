@@ -17,20 +17,23 @@ WaterColorCanvas::WaterColorCanvas() {
   blurShader.load("shaders/passthrough.vert", "shaders/blur.frag");
   pigmentShader.load("shaders/passthrough.vert", "shaders/pigmentBleeding.frag");
   
+  const int width = ofGetWidth();
+  const int height = ofGetHeight();
+  
   tempFbo = make_shared<ofFbo>();
-  tempFbo->allocate(1280, 720, GL_RGBA32F); //temporary buffer
+  tempFbo->allocate(width, height, GL_RGBA32F); //temporary buffer
   noiseFbo = make_shared<ofFbo>();
-  noiseFbo->allocate(1280, 720, GL_RGBA32F); //noise
+  noiseFbo->allocate(width, height, GL_RGBA32F); //noise
   waterFbo = make_shared<ofFbo>();
-  waterFbo->allocate(1280, 720, GL_RGBA32F); //water
+  waterFbo->allocate(width, height, GL_RGBA32F); //water
   paperFbo = make_shared<ofFbo>();
-  paperFbo->allocate(1280, 720, GL_RGBA32F); //fixed color
+  paperFbo->allocate(width, height, GL_RGBA32F); //fixed color
   paperFboTwo = make_shared<ofFbo>();
-  paperFboTwo->allocate(1280, 720, GL_RGBA32F);
+  paperFboTwo->allocate(width, height, GL_RGBA32F);
   clearLayers();
 
   master = make_shared<ofFbo>();
-  master->allocate(1280, 720, GL_RGBA32F);
+  master->allocate(width, height, GL_RGBA32F);
   master->begin();
   ofClear(255, 255, 255,0);
   master->end();
@@ -60,6 +63,7 @@ shared_ptr<ofFbo> WaterColorCanvas::draw() {
   
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   waterRenderShader.begin();
+  waterRenderShader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
   waterFbo->draw(0, 0);
   waterRenderShader.end();
 
@@ -93,6 +97,7 @@ shared_ptr<ofFbo> WaterColorCanvas::applyShader(ofShader& shader, shared_ptr<ofF
   tempFbo->begin();
   ofClear(0.f, 0.f, 0.f, 0.f);
   shader.begin();
+  shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
   switch (type) {
     case SHADING_TYPE_NOISE:
     shader.setUniform1f("time", (float) ofGetFrameNum());

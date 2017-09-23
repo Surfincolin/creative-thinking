@@ -30,8 +30,7 @@ namespace ct {
     
     std::shared_ptr<std::map<std::string, float>> latestData;
 //    std::vector<std::string> waves = { "delta", "theta", "hAlpha", "lAlpha", "hBeta", "lBeta", "hGamma", "lGamma", "attention", "meditation" };
-    std::vector<std::string> waves = { "delta", "theta", "hAlpha", "lAlpha"};
-    //, "hBeta", "lBeta", "hGamma", "lGamma" };
+    std::vector<std::string> waves = { "delta", "theta", "hAlpha", "lAlpha", "hBeta", "lBeta", "hGamma", "lGamma" };
     
   private:
     

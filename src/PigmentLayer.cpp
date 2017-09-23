@@ -11,7 +11,7 @@
 PigmentLayer::PigmentLayer() {
   ofDisableArbTex();
   fbo = make_shared<ofFbo>();
-  fbo->allocate(1280, 720, GL_RGBA32F);
+  fbo->allocate(ofGetWidth(), ofGetHeight(), GL_RGBA32F);
   fbo->begin();
   ofClear(0.f, 0.f, 0.f, 255.f);
   fbo->end();
@@ -26,6 +26,7 @@ shared_ptr<ofFbo> PigmentLayer::update(shared_ptr<ofFbo> water, shared_ptr<ofFbo
   temp->begin();
   ofClear(0.f, 0.f, 0.f, 0.f);
   shader.begin();
+  shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
   shader.setUniformTexture("noise", noise->getTexture(), 1);
   shader.setUniformTexture("water", water->getTexture(), 2);
   fbo->draw(0, 0);

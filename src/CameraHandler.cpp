@@ -15,7 +15,7 @@ CameraHandler::CameraHandler() {
 //  photo.init();
   bCamIsBusy = false;
   original = make_shared<ofImage>();
-  original->allocate(1280,720, OF_IMAGE_COLOR);
+  original->allocate(ofGetWidth(),ofGetHeight(), OF_IMAGE_COLOR);
 
 //  photo.test();
 }

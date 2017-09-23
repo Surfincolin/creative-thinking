@@ -7,6 +7,11 @@ using namespace ct;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+  cout << "Working resolution: " << ofGetWidth() << " : " << ofGetHeight() << endl;
+  
+  w = ofGetWidth();
+  h = ofGetHeight();
+  
   ofDisableArbTex();
   ofSetFrameRate(30); // for watercolor
   ofBackground(255,255,255,0);
@@ -134,7 +139,7 @@ void ofApp::draw(){
 //      imageHandler.draw();
     
     ofSetColor(255, 255, 255);
-    ofDrawRectangle(0, 0, 1280, 720);
+    ofDrawRectangle(0, 0, w, h);
     background->draw(0, 0);
     
     brain->drawGraphOverlay();
@@ -144,8 +149,8 @@ void ofApp::draw(){
   
   if (state == BRAIN_DATA) {
     ofSetColor(255, 255, 255);
-    ofDrawRectangle(0, 0, 1280, 720);
-    background->draw(0, 0);
+    ofDrawRectangle(0, 0, w, h);
+    
 //    if (enough > 0) {
 //      printf("p");
       paintBrainData();
@@ -153,7 +158,9 @@ void ofApp::draw(){
 
 //    ofBlendMode(OF_BLENDMODE_SCREEN);
 //    background->draw(0, 0);
-//    
+//
+    background->draw(0, 0);
+    
     water = watercolor->draw();
     glBlendFunc(GL_ZERO, GL_SRC_COLOR);
     water->draw(0, 0);
@@ -165,7 +172,7 @@ void ofApp::draw(){
   
   if (state == INSTRUCTION_3) {
     ofSetColor(255, 255, 255);
-    ofDrawRectangle(0, 0, 1280, 720);
+    ofDrawRectangle(0, 0, w, h);
     background->draw(0, 0);
     
     water = watercolor->draw();
@@ -187,10 +194,12 @@ void ofApp::draw(){
 void ofApp::paintBrainData() {
   
   
-  int hz = ofGetWidth() * 0.8;
-  int vr = ofGetHeight() * 0.5;
-  int side = ofGetWidth() * 0.2 / 2;
+  int hz = ofGetWidth() * 0.9;
+  int vr = ofGetHeight() * 0.9;
+  int side = ofGetWidth() * 0.1 / 2;
   int top = ofGetHeight() * 0.1 / 2;
+  
+//  cout << hz << ":" << vr << ", " << side << ":" << top << endl;
   
   int i = 0;
   for (auto &w : brain->waves) {
@@ -247,9 +256,9 @@ void ofApp::paintBrainData() {
   if (countdown != 0) {
     ofSetColor(ofColor::white);
     ofRectangle bb = nunitoSans120.getStringBoundingBox(to_string(countdown), 0, 0);
-    auto h = 1280/2 - bb.getWidth()/2;
-    auto v = 720/2 + bb.getHeight()/2;
-    nunitoSans120.drawString(to_string(countdown), h, v);
+    auto hp = w/2 - bb.getWidth()/2;
+    auto vp = h/2 + bb.getHeight()/2;
+    nunitoSans120.drawString(to_string(countdown), hp, vp);
   }
 
 }
@@ -305,6 +314,10 @@ void ofApp::keyPressed(int key){
   
   if (key == 'x') {
     brain->resetHighs();
+  }
+  
+  if (key == 'f') {
+    ofToggleFullscreen();
   }
   
   

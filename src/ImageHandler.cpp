@@ -22,7 +22,7 @@ void ImageHandler::setOriginal(shared_ptr<ofImage> iPic) {
 //  originalImage->clear();
   originalImage = iPic;
   
-  fx.setup(iPic->getWidth(), iPic-> getHeight());
+  fx.setup(iPic->getWidth(), iPic->getHeight());
 //  fx.setup(1280, 720);
   fx.turnOnEffect(EFFECTS::BLUR);
   fx.turnOnEffect(EFFECTS::FINDEDGE);
@@ -50,18 +50,35 @@ void ImageHandler::update() {
 void ImageHandler::processImage() {
   printf("processImage\n");
   
-  auto wid = originalImage->getWidth();
-  auto hig = originalImage->getHeight();
+  const int screenW = ofGetWidth();
+  const int screenH = ofGetHeight();
   
-  int nHi = wid * 720.0/1280.0;
-  int buffer = (hig - nHi) / 2.0;
+  int wid = originalImage->getWidth();
+  int hig = originalImage->getHeight();
+  
+  int nWi = wid;
+  int nHi = hig;
+  int vbuffer = 0;
+  int wbuffer = 0;
+  
+  if (screenH > screenW ) {
+    cout << "Height is taller" << endl;
+    nWi = hig * screenW/screenH;
+    wbuffer = (wid - nWi) / 2.0;
+  } else {
+    cout << "Width is taller" << endl;
+    nHi = wid * screenH/screenW;
+    vbuffer = (hig - nHi) / 2.0;
+  }
+  
+  printf("w:%i h:%i nWi:%i nHi:%i wbuffer:%i vbuffer:%i", wid, hig, nWi, nHi, wbuffer, vbuffer);
   
   processedImage->clone(*originalImage);
   
   fx.processImage(processedImage);
   
-  processedImage->crop(0, buffer, wid, nHi);
-  processedImage->resize(1280, 720);
+  processedImage->crop(wbuffer, vbuffer, nWi, nHi);
+  processedImage->resize(screenW, screenH);
   processedImage->update();
   
 //  fx.processImage(processedImage);  
