@@ -39,12 +39,12 @@ void ImageHandler::resetOriginal() {
 }
 
 void ImageHandler::update() {
-  if (active) {
-    
-    processedImage->update();
-    
-    
-  }
+//  if (active) {
+//    
+//    processedImage->update();
+//    
+//    
+//  }
 }
 
 void ImageHandler::processImage() {

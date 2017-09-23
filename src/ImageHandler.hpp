@@ -29,6 +29,7 @@ namespace ct {
     void setOriginal(shared_ptr<ofImage> iPic);
     void resetOriginal();
     void processImage();
+    shared_ptr<ofImage> getProcessedImage() { return processedImage; }
     
     void update();
     void draw();

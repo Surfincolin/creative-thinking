@@ -18,9 +18,7 @@ void ofApp::setup(){
   watercolor->setup();
   
   segmenter = make_unique<Segmentation>();
-  img.load("test-photo.jpg");
-  img.update();
-  layers = segmenter->getSegments(img, 12);
+
   
   ofTrueTypeFont::setGlobalDpi(72);
   nunitoSans120.load("fonts/Nunito_Sans/NunitoSans-Regular.ttf", 120, true, true);
@@ -40,47 +38,288 @@ void ofApp::setup(){
   printf("Starting Brain Monitor\n");
   brain = make_unique<Brain>();
   
-//  water = make_shared<ofFbo>();
-//  water->allocate(1280, 720, GL_RGBA32F);
-//  water->begin();
-//  ofClear(255, 255, 255,0);
-//  water->end();
+  background = imageHandler.getProcessedImage();
+  
+  brush.load("brush.png");
+  
+  int i = 0;
+  for (auto &w : brain->waves) {
+    printf("wave: %s\n", w.c_str());
+    previousValues.insert(make_pair(w, 0.0));
+    brushPositions.push_back(ofVec2f(0));
+    ofColor c = getNextColor(i);
+    watercolor->addColor(c);
+    i++;
+  }
+  
+
+}
+
+void ofApp::nextState() {
+  state = (state == 7) ? 0 : state + 1;
+}
+
+void ofApp::begin() {
+  
+//  img.load("test-photo.jpg");
+//  img.update();
+  
+  ofImage temp = ofImage(cameraHandler->getPhoto()->getPixels());
+  
+  auto wid = temp.getWidth();
+  auto hig = temp.getHeight();
+  
+  int nHi = wid * 720.0/1280.0;
+  int buffer = (hig - nHi) / 2.0;
+  
+  temp.crop(0, buffer, wid, nHi);
+  temp.resize(1280, 720);
+  
+  layers = segmenter->getSegments(temp, 8);
+  
+  // add segments to watercolor
+  for (int i = 0; i < layers.size(); i++) {
+    ofColor lColor = getNextColor(i);
+    watercolor->addColorLayer(layers.at(i), lColor);
+  }
+  
+  printf("begin finished\n");
+  
+}
+
+//--------------------------------------------------------------
+ofColor ofApp::getNextColor(int n) {
+  
+  float phase = 0;
+  float freq = PI*2/brain->waves.size();
+  int center = 128;
+  int width = 127;
+  
+  int r = sin(freq * n + 2 + phase) * width + center;
+  int g = sin(freq * n + 0 + phase) * width + center;
+  int b = sin(freq * n + 4 + phase) * width + center;
+  
+  return ofColor(r, g, b);
+}
+
+void ofApp::countDown() {
+  int currentTime = ofGetFrameNum() / 30; //60fps
+  if (currentTime > previousTime) {
+    
+    if (countdown != 0) {
+      countdown--;
+      if (countdown == 0) {
+        // do stuff after countdown
+        nextState();
+      }
+    }
+    
+    
+    previousTime = currentTime;
+    
+  }
+}
+
+void ofApp::serviceStarter() {
+  
+  if (state == RESTART) {
+  }
+
+//    case StateController::READY :
+
+//    case StateController::INSTRUCTION_1 :
+  
+  if (state == TAKE_PHOTO) {
+    background->clear();
+    cameraHandler->takePhoto();
+  }
+  
+//    case StateController::INSTRUCTION_2 :
+  
+  if (state == BRAIN_DATA) {
+    brain->resetHighs();
+    paintWater = true;
+  }
+  
+//    case StateController::INSTRUCTION_3 :
+  
+//    case StateController::FINALIZE :
   
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-  img.update();
-  brain->update();
-  watercolor->update();
-  
-  if (countdown != 0) {
-    countdown--;
-    if (countdown == 0) {
-      // do stuff after countdown
-    }
-  }
 
+  background->update();
+  brain->update();
+  
+  int currentTime = ofGetFrameNum() / 30; //60fps
+  if (currentTime > previousTime) {
+    
+    if (countdown != 0) {
+      countdown--;
+      if (countdown == 0) {
+        // do stuff after countdown
+        nextState();
+      }
+    }
+    
+    
+    previousTime = currentTime;
+    
+  }
   
   cameraHandler->update();
-  imageHandler.update();
   
   if (cameraHandler->newPhoto()) {
     imageHandler.setOriginal( cameraHandler->getPhoto() );
+    nextState();
+  }
+  
+  if (state == BRAIN_DATA) {
+    watercolor->update();
   }
 
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+  ofClear(0, 0, 0, 255);
+  ofSetColor(255, 255, 255);
+  
+  
+  if (state == RESTART) {
+    ofDrawBitmapString("Please wait resetting...", 20, 35);
+  }
+  
+  if (state == READY) {
+    ofDrawBitmapString("READY!! Press 'space' to begin.", 20, 35);
+  }
+  
+  if (state == INSTRUCTION_1) {
+    ofDrawBitmapString("Lets take a photo, press the button and smile.", 20, 35);
+  }
+  
+  if (state == TAKE_PHOTO) {
+      
+    ofDrawBitmapString("Smile!!!", 20, 35);
+  }
+
+  if (state == INSTRUCTION_2) {
+      
+//      imageHandler.draw();
+//    background->draw(0, 0);
+    ofSetColor(255, 255, 255);
+    ofDrawRectangle(0, 0, 1280, 720);
+    
+    brain->drawGraphOverlay();
+    
+    ofDrawBitmapString("Alright put on the brain device. 'space' to continue.", 20, 35);
+  }
+  
+  if (state == BRAIN_DATA) {
+    ofSetColor(255, 255, 255);
+    ofDrawRectangle(0, 0, 1280, 720);
+    
+    paintBrainData();
+//
+//    ofBlendMode(OF_BLENDMODE_SCREEN);
+//    //      imageHandler.draw();
+//    background->draw(0, 0);
+//    
+    water = watercolor->draw();
+    glBlendFunc(GL_ZERO, GL_SRC_COLOR);
+    water->draw(0, 0);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    ofSetColor(0, 0, 0);
+    ofDrawBitmapString("Try and think of some fond memories.", 20, 35);
+  }
+  
+  if (state == INSTRUCTION_3) {
+      
+    
+    
+    ofDrawBitmapString("Great! This is your mind selfie!", 20, 35);
+  }
+  
+  if (state == FINALIZE) {
+
+    ofDrawBitmapString("Saving...", 20, 35);
+  }
+  
   
 //  ofSetColor(ofColor::white);
-//  ofClear(0,0,0,255);
+//  for (auto &layer : layers) {
+//    layer->draw(0, 0);
+//  }
   
-////  cameraHandler->draw();
-////  imageHandler.draw();  
+//  if (!hideGui) {
+//    gui.draw();
+//  }
+}
+
+void ofApp::paintBrainData() {
+  int currentWidth = 120;
+//  ofRandomuf()
+  int hz = ofGetWidth() * 0.8;
+  int vr = ofGetHeight() * 0.5;
+  int side = ofGetWidth() * 0.2 / 2;
+  int top = ofGetHeight() * 0.1 / 2;
   
-  brain->drawGraphOverlay();
+//  if (paintWater) {
+//    int x = ofRandom(hz);
+//    int y = ofRandom(vr);
+//    
+//    brushPositions.at(0) = ofVec2f(x, y);
+//  } else {
+//    brushPositions.at(0).x += (ofRandom(12) - 6.0);
+//    brushPositions.at(0).y += (ofRandom(12) - 6.0);
+//  }
+  
+  int i = 0;
+  for (auto &w : brain->waves) {
+    if (previousValues.at(w) == brain->latestData->at(w)) {
+      previousValues.at(w) = brain->latestData->at(w);
+      int x = ofRandom(hz);
+      int y = ofRandom(vr);
+
+      brushPositions.at(i) = ofVec2f(x, y);
+      
+    } else {
+      brushPositions.at(i).x += (ofRandom(24) - 12.0);
+      brushPositions.at(i).y += (ofRandom(24) - 12.0);
+    }
+    i++;
+  }
+  
+//  printf("mid paint Brain...");
+  
+  if (paintWater) {
+    watercolor->canvas.beginWaterDraw();
+    ofPushStyle();
+    ofSetColor(128, ofRandom(100, 120), 0, 300 / currentWidth);
+    ofClear(70, 70, 70);
+    ofPopStyle();
+    watercolor->canvas.endWaterDraw();
+    paintWater = false;
+  }
+  
+  i = 0;
+  for (auto &w: brain->waves) {
+    watercolor->canvas.beginPigmentDraw(i);
+    ofPushStyle();
+    ofSetColor(ofRandom(100, 150), 0, 0, 300 / currentWidth / ((watercolor->state == 2) ? 2 : 1));
+    //brush draw
+    ofVec2f pos = brushPositions.at(i);
+    brush.draw(pos.x - currentWidth / 2 * 2, pos.y - currentWidth / 2 * 2, currentWidth * 2, currentWidth * 2);
+//    brush.draw(brushPositions.at(0));
+    ofPopStyle();
+    watercolor->canvas.endPigmentDraw();
+    i++;
+  }
+  
+//  brain->drawGraphOverlay();
   
   if (countdown != 0) {
     ofSetColor(ofColor::white);
@@ -90,22 +329,6 @@ void ofApp::draw(){
     nunitoSans120.drawString(to_string(countdown), h, v);
   }
 
-  ofBlendMode(OF_BLENDMODE_SCREEN);
-  
-  ofSetColor(ofColor::white);
-  for (auto &layer : layers) {
-    layer->draw(0, 0);
-  }
-  
-  water = watercolor->draw();
-
-  glBlendFunc(GL_ZERO, GL_SRC_COLOR);
-  water->draw(0, 0);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  
-  if (!hideGui) {
-    gui.draw();
-  }
 }
 
 //--------------------------------------------------------------
@@ -138,17 +361,27 @@ void ofApp::keyPressed(int key){
   }
   
   if (key == ' ') {
-    cameraHandler->takePhoto();
+//    cameraHandler->takePhoto();
+//    state++;
+    nextState();
+    serviceStarter();
+  }
+  if (key == 'b') {
+    begin();
   }
   
   if (key == 'r') {
-//    countdown = 10;
+    countdown = 10;
     // record
 //    analyze();
   }
   
   if (key == 'a') {
     watercolor->pressed = true;
+  }
+  
+  if (key == 'x') {
+    brain->resetHighs();
   }
   
   

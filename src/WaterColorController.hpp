@@ -27,10 +27,14 @@ namespace ct {
     std::shared_ptr<ofFbo> draw();
     
     void strokeDraw();
+    void imageLayerDraw();
     void clearLayers();
     
     void addColor(ofColor iColor);
     void resetColors();
+    
+    void addColorLayer(shared_ptr<ofImage> iImage, ofColor iColor);
+    
     
     ofImage bg;
     ofImage brush;
@@ -51,6 +55,8 @@ namespace ct {
     static const int STATE_PIGMENT = 1;
     static const int STATE_MIX = 2;
     
+    std::vector<std::shared_ptr<ofImage>> imageLayers;
+    int waterbrush = 0;
   };
   
 }

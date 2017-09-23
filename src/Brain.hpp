@@ -26,6 +26,12 @@ namespace ct {
     std::shared_ptr<std::vector<float>> analyze();
     void startRecording();
     void stopRecording();
+    void resetHighs();
+    
+    std::shared_ptr<std::map<std::string, float>> latestData;
+//    std::vector<std::string> waves = { "delta", "theta", "hAlpha", "lAlpha", "hBeta", "lBeta", "hGamma", "lGamma", "attention", "meditation" };
+    std::vector<std::string> waves = { "delta", "theta", "hAlpha", "lAlpha"};
+    //, "hBeta", "lBeta", "hGamma", "lGamma" };
     
   private:
     
@@ -33,7 +39,7 @@ namespace ct {
     ofxBrainWave mindwave;
     EegData brainData;
     
-    std::vector<std::string> waves = { "delta", "theta", "hAlpha", "lAlpha", "hBeta", "lBeta", "hGamma", "lGamma", "attention", "meditation" };
+    
     std::map<std::string, float> highs;
     std::map<std::string, std::vector<float> > graphData;
     int previousTime = 0;

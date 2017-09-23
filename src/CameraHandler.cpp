@@ -12,17 +12,19 @@ using namespace ct;
 
 CameraHandler::CameraHandler() {
   
-  photo.init();
+//  photo.init();
   bCamIsBusy = false;
   original = make_shared<ofImage>();
   original->allocate(1280,720, OF_IMAGE_COLOR);
-  
+
+//  photo.test();
 }
 
 void CameraHandler::takePhoto() {
   
   busy = true;
-  photo.startCapture();
+//  photo.startCapture();
+  photo.init();
   
 }
 

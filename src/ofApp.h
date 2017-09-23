@@ -10,8 +10,12 @@
 #include "Brain.hpp"
 #include "Segmentation.hpp"
 #include "WaterColorController.hpp"
+#include "StateController.hpp"
+
 
 class ofApp : public ofBaseApp{
+  
+  ct::StateController appState;
   
   int w = 1280;
   int h = 720;
@@ -46,6 +50,14 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
   
+    void begin();
+  void serviceStarter();
+  void countDown();
+  void paintBrainData();
+  void randomPosition();
+  void nextState();
+  
+    ofColor getNextColor(int n);
   
     ofImage pic;
     ofImage img;
@@ -60,5 +72,23 @@ class ofApp : public ofBaseApp{
   
   ct::WaterColorController *watercolor = new ct::WaterColorController();
   std::shared_ptr<ofFbo> water;
+  
+  shared_ptr<ofImage> background;
+  int previousTime = 0;
+  
+  ofImage brush;
+  map<std::string, float> previousValues;
+  vector<ofVec2f> brushPositions;
+  bool paintWater = true;
+  
+  int state = 4;
+  static const int RESTART = 0;
+  static const int READY = 1;
+  static const int INSTRUCTION_1 = 2;
+  static const int TAKE_PHOTO = 3;
+  static const int INSTRUCTION_2 = 4;
+  static const int BRAIN_DATA = 5;
+  static const int INSTRUCTION_3 = 6;
+  static const int FINALIZE = 7;
   
 };

@@ -12,9 +12,12 @@ using namespace ct;
 
 Brain::Brain() {
   
+  latestData = make_shared<map<string, float>>();
+  
   for (auto w : waves) {
     highs.insert(make_pair(w, 0));
     graphData.insert(make_pair(w, vector<float>() ));
+    latestData->insert(make_pair(w, 0.0));
   }
   
   for (int i = 0; i < segments; i++) {
@@ -72,6 +75,12 @@ shared_ptr<vector<float>> Brain::analyze() {
   
 }
 
+void Brain::resetHighs() {
+  for (auto &w: highs) {
+    w.second = 0;
+  }
+}
+
 void Brain::update() {
   brainData = mindwave.getEegData();
   
@@ -81,7 +90,7 @@ void Brain::update() {
     highs.at(w) = (v > n) ? v : n;
   }
   
-  int currentTime = ofGetFrameNum() / 60; //60fps
+  int currentTime = ofGetFrameNum() / 30; //60fps
   if (currentTime > previousTime) {
     
     for (auto w : waves) {
@@ -90,6 +99,7 @@ void Brain::update() {
       
       graphData.at(w).erase(graphData.at(w).begin());
       graphData.at(w).push_back(rel);
+      latestData->at(w) = rel;
     }
     
     previousTime = currentTime;
@@ -104,7 +114,7 @@ void Brain::drawGraphOverlay() {
   
   const int width = ofGetWidth();
   const int height = ofGetHeight();
-  
+  ofClear(255, 255, 255);
   float div = width/segments;
   float cN = 0;
   for (auto w : waves) {
