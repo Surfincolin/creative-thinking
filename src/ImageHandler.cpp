@@ -62,6 +62,7 @@ void ImageHandler::processImage() {
   
   processedImage->crop(0, buffer, wid, nHi);
   processedImage->resize(1280, 720);
+  processedImage->update();
   
 //  fx.processImage(processedImage);  
   

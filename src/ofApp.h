@@ -50,7 +50,9 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
   
-    void begin();
+  float enough = 300.0;
+  float drawFrames = 300.0;
+  
   void serviceStarter();
   void countDown();
   void paintBrainData();
@@ -81,7 +83,7 @@ class ofApp : public ofBaseApp{
   vector<ofVec2f> brushPositions;
   bool paintWater = true;
   
-  int state = 4;
+  int state = 0;
   static const int RESTART = 0;
   static const int READY = 1;
   static const int INSTRUCTION_1 = 2;

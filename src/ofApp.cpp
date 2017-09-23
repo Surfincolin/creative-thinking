@@ -7,44 +7,27 @@ using namespace ct;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+  ofDisableArbTex();
+  ofSetFrameRate(30); // for watercolor
   ofBackground(255,255,255,0);
   
   //  ofSetWindowShape(w*2, h);
   //  ofSetWindowPosition(10, 10);
   
-  
-  ofDisableArbTex();
-  ofSetFrameRate(30); // for watercolor
   watercolor->setup();
-  
-  segmenter = make_unique<Segmentation>();
-
   
   ofTrueTypeFont::setGlobalDpi(72);
   nunitoSans120.load("fonts/Nunito_Sans/NunitoSans-Regular.ttf", 120, true, true);
-
-  snapshot = false;
-  hideGui = false;
-  
-  gui.setup();
-  gui.add(lowerThreshold.setup("Lower Threshold", 60, 0, 255));
-  gui.add(upperThreshold.setup("Upper Threshold", 150, 0, 255));
-  gui.add(blurPasses.setup("Blur Passes", 6, 0, 15));
-  
-  gui.setPosition(w - gui.getWidth(), h - gui.getHeight());
   
   ofAddListener(ofEvents().keyPressed, cameraHandler, &CameraHandler::keyPressed);
   
-  printf("Starting Brain Monitor\n");
   brain = make_unique<Brain>();
   
   background = imageHandler.getProcessedImage();
-  
   brush.load("brush.png");
   
   int i = 0;
   for (auto &w : brain->waves) {
-    printf("wave: %s\n", w.c_str());
     previousValues.insert(make_pair(w, 0.0));
     brushPositions.push_back(ofVec2f(0));
     ofColor c = getNextColor(i);
@@ -57,34 +40,6 @@ void ofApp::setup(){
 
 void ofApp::nextState() {
   state = (state == 7) ? 0 : state + 1;
-}
-
-void ofApp::begin() {
-  
-//  img.load("test-photo.jpg");
-//  img.update();
-  
-  ofImage temp = ofImage(cameraHandler->getPhoto()->getPixels());
-  
-  auto wid = temp.getWidth();
-  auto hig = temp.getHeight();
-  
-  int nHi = wid * 720.0/1280.0;
-  int buffer = (hig - nHi) / 2.0;
-  
-  temp.crop(0, buffer, wid, nHi);
-  temp.resize(1280, 720);
-  
-  layers = segmenter->getSegments(temp, 8);
-  
-  // add segments to watercolor
-  for (int i = 0; i < layers.size(); i++) {
-    ofColor lColor = getNextColor(i);
-    watercolor->addColorLayer(layers.at(i), lColor);
-  }
-  
-  printf("begin finished\n");
-  
 }
 
 //--------------------------------------------------------------
@@ -102,55 +57,27 @@ ofColor ofApp::getNextColor(int n) {
   return ofColor(r, g, b);
 }
 
-void ofApp::countDown() {
-  int currentTime = ofGetFrameNum() / 30; //60fps
-  if (currentTime > previousTime) {
-    
-    if (countdown != 0) {
-      countdown--;
-      if (countdown == 0) {
-        // do stuff after countdown
-        nextState();
-      }
-    }
-    
-    
-    previousTime = currentTime;
-    
-  }
-}
-
 void ofApp::serviceStarter() {
   
   if (state == RESTART) {
   }
-
-//    case StateController::READY :
-
-//    case StateController::INSTRUCTION_1 :
   
   if (state == TAKE_PHOTO) {
     background->clear();
     cameraHandler->takePhoto();
   }
   
-//    case StateController::INSTRUCTION_2 :
-  
   if (state == BRAIN_DATA) {
     brain->resetHighs();
     paintWater = true;
+    enough = drawFrames;
   }
-  
-//    case StateController::INSTRUCTION_3 :
-  
-//    case StateController::FINALIZE :
   
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
 
-  background->update();
   brain->update();
   
   int currentTime = ofGetFrameNum() / 30; //60fps
@@ -163,10 +90,7 @@ void ofApp::update(){
         nextState();
       }
     }
-    
-    
     previousTime = currentTime;
-    
   }
   
   cameraHandler->update();
@@ -176,7 +100,7 @@ void ofApp::update(){
     nextState();
   }
   
-  if (state == BRAIN_DATA) {
+  if (state == BRAIN_DATA || state == INSTRUCTION_3) {
     watercolor->update();
   }
 
@@ -208,9 +132,10 @@ void ofApp::draw(){
   if (state == INSTRUCTION_2) {
       
 //      imageHandler.draw();
-//    background->draw(0, 0);
+    
     ofSetColor(255, 255, 255);
     ofDrawRectangle(0, 0, 1280, 720);
+    background->draw(0, 0);
     
     brain->drawGraphOverlay();
     
@@ -220,11 +145,13 @@ void ofApp::draw(){
   if (state == BRAIN_DATA) {
     ofSetColor(255, 255, 255);
     ofDrawRectangle(0, 0, 1280, 720);
-    
-    paintBrainData();
-//
+    background->draw(0, 0);
+//    if (enough > 0) {
+//      printf("p");
+      paintBrainData();
+//    }
+
 //    ofBlendMode(OF_BLENDMODE_SCREEN);
-//    //      imageHandler.draw();
 //    background->draw(0, 0);
 //    
     water = watercolor->draw();
@@ -237,9 +164,16 @@ void ofApp::draw(){
   }
   
   if (state == INSTRUCTION_3) {
-      
+    ofSetColor(255, 255, 255);
+    ofDrawRectangle(0, 0, 1280, 720);
+    background->draw(0, 0);
     
+    water = watercolor->draw();
+    glBlendFunc(GL_ZERO, GL_SRC_COLOR);
+    water->draw(0, 0);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
+    ofSetColor(0, 0, 0);
     ofDrawBitmapString("Great! This is your mind selfie!", 20, 35);
   }
   
@@ -248,75 +182,64 @@ void ofApp::draw(){
     ofDrawBitmapString("Saving...", 20, 35);
   }
   
-  
-//  ofSetColor(ofColor::white);
-//  for (auto &layer : layers) {
-//    layer->draw(0, 0);
-//  }
-  
-//  if (!hideGui) {
-//    gui.draw();
-//  }
 }
 
 void ofApp::paintBrainData() {
-  int currentWidth = 120;
-//  ofRandomuf()
+  
+  
   int hz = ofGetWidth() * 0.8;
   int vr = ofGetHeight() * 0.5;
   int side = ofGetWidth() * 0.2 / 2;
   int top = ofGetHeight() * 0.1 / 2;
   
-//  if (paintWater) {
-//    int x = ofRandom(hz);
-//    int y = ofRandom(vr);
-//    
-//    brushPositions.at(0) = ofVec2f(x, y);
-//  } else {
-//    brushPositions.at(0).x += (ofRandom(12) - 6.0);
-//    brushPositions.at(0).y += (ofRandom(12) - 6.0);
-//  }
-  
   int i = 0;
   for (auto &w : brain->waves) {
-    if (previousValues.at(w) == brain->latestData->at(w)) {
-      previousValues.at(w) = brain->latestData->at(w);
-      int x = ofRandom(hz);
-      int y = ofRandom(vr);
-
-      brushPositions.at(i) = ofVec2f(x, y);
+    int counter = 0;
+    float width = 120 * brain->latestData->at(w);
+    float currentWidth = width;
+    ofVec2f pos = {side+ofRandom(hz) , top+ofRandom(vr)};
+    ofVec2f target = ofVec2f(0);
+    target.x = pos.x + (ofRandom(128) - 64.0);
+    target.y = pos.y + (ofRandom(128) - 64.0);
+    ofVec2f vec = ofVec2f(0,0);
+    
+    float len = pos.distance(target);
+    
+    float p = max((float)(enough / drawFrames), 0.0f);
+//    float p2 = max((float)(enough+150 / drawFrames), 0.0f);
+    
+    while (counter < 1000) {
+      counter++;
+      currentWidth = min(width, max(width / 4.f, currentWidth - (len - 25) * 0.001f));
       
-    } else {
-      brushPositions.at(i).x += (ofRandom(24) - 12.0);
-      brushPositions.at(i).y += (ofRandom(24) - 12.0);
+      vec += (target - pos).normalize() * 0.03;
+      vec *= 0.97;
+      if (vec.length() > 2) {
+        vec = vec.normalize() * 2;
+      }
+      
+      pos += vec;
+      
+      watercolor->canvas.beginWaterDraw();
+      ofPushStyle();
+      ofSetColor(70, ofRandom(100, 120), 0, 300 / currentWidth * p);
+      brush.draw(pos.x - currentWidth * 1.05 / 2 * 2, pos.y - currentWidth * 1.05/ 2 * 2, currentWidth * 1.05 * 2, currentWidth * 1.05 * 2);
+      ofPopStyle();
+      watercolor->canvas.endWaterDraw();
+      
+      watercolor->canvas.beginPigmentDraw(i);
+      ofPushStyle();
+      ofSetColor(ofRandom(100, 150), 0, 0, 300 / currentWidth / 2 * p*1.5);
+      brush.draw(pos.x - currentWidth / 2 * 2, pos.y - currentWidth / 2 * 2, currentWidth * 2, currentWidth * 2);
+      ofPopStyle();
+      watercolor->canvas.endPigmentDraw();
+      
+      if (pos.distance(target) < 10) {break;}
+      
     }
+    
     i++;
-  }
-  
-//  printf("mid paint Brain...");
-  
-  if (paintWater) {
-    watercolor->canvas.beginWaterDraw();
-    ofPushStyle();
-    ofSetColor(128, ofRandom(100, 120), 0, 300 / currentWidth);
-    ofClear(70, 70, 70);
-    ofPopStyle();
-    watercolor->canvas.endWaterDraw();
-    paintWater = false;
-  }
-  
-  i = 0;
-  for (auto &w: brain->waves) {
-    watercolor->canvas.beginPigmentDraw(i);
-    ofPushStyle();
-    ofSetColor(ofRandom(100, 150), 0, 0, 300 / currentWidth / ((watercolor->state == 2) ? 2 : 1));
-    //brush draw
-    ofVec2f pos = brushPositions.at(i);
-    brush.draw(pos.x - currentWidth / 2 * 2, pos.y - currentWidth / 2 * 2, currentWidth * 2, currentWidth * 2);
-//    brush.draw(brushPositions.at(0));
-    ofPopStyle();
-    watercolor->canvas.endPigmentDraw();
-    i++;
+    enough--;
   }
   
 //  brain->drawGraphOverlay();
@@ -367,7 +290,7 @@ void ofApp::keyPressed(int key){
     serviceStarter();
   }
   if (key == 'b') {
-    begin();
+//    begin();
   }
   
   if (key == 'r') {
